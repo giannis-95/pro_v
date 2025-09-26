@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CourseController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,7 +13,10 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function(){
-    Route::resource('users', UserController::class);
+    Route::resources([
+        'users' => UserController::class,
+        'courses' => CourseController::class
+    ]);
 });
 
 require __DIR__.'/auth.php';

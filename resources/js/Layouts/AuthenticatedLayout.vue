@@ -18,6 +18,7 @@ const open = ref(false);
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <Link :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</Link>
                                 <Link :href="route('users.index')">Users</Link>
+                                <Link :href="route('courses.index')">Courses</Link>
                             </div>
                         </div>
 
