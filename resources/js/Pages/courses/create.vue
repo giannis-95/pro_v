@@ -37,7 +37,7 @@
 
 <script setup>
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-    import { Link,useForm,router } from '@inertiajs/vue3';
+    import { Link,useForm } from '@inertiajs/vue3';
 
     const create_course = useForm({
         title:'',

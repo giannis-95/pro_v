@@ -1,6 +1,9 @@
 <template>
     <AuthenticatedLayout>
         <div>
+            <div v-if="successMessage" class="alert alert-success">
+                {{ successMessage }}
+            </div>
             <div class="container">
                 <div class="row mt-4 mb-4">
                     <div class="col-12">

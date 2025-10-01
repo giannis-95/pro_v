@@ -34,7 +34,7 @@ class CourseController extends Controller
         $data = $request->validated();
 
         if($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('courses', 'public');
+            $data['image'] = $request->file('image')->store('courses','public');
         }
 
         Course::create($data);
@@ -63,8 +63,17 @@ class CourseController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Course $course){
+    public function update(CourseRequest $request, Course $course){
+        $data = $request->validated();
+dd($data);
+        if($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('courses','public');
+        }
 
+        $course->fill($data);
+        $course->save();
+
+        return redirect()->route('courses.index')->withSuccess('Η Ενημέρωση του μαθήματος έγινε με επιτυχία');
     }
 
     /**
