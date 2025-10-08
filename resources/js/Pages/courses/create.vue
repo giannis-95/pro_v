@@ -2,6 +2,13 @@
     <AuthenticatedLayout>
         <form @submit.prevent="createCourse" method="POST" enctype="multipart/form-data">
             <div class="container mt-2">
+                <div v-if="create_course.hasErrors" class="alert alert-danger">
+                    <ul class="mb-0">
+                        <li v-for="(errorMessage , field) in create_course.errors" :key="field">
+                            {{ errorMessage }}
+                        </li>
+                    </ul>
+                </div>
                 <div class="row text-center">
                     <h3>Δημιουργία Μαθηματος</h3>
                 </div>

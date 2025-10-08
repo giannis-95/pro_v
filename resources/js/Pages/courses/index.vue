@@ -1,10 +1,10 @@
 <template>
     <AuthenticatedLayout>
         <div>
-            <div v-if="successMessage" class="alert alert-success">
-                {{ successMessage }}
-            </div>
             <div class="container">
+                <div v-if="successMessage" class="alert alert-success">
+                    {{ successMessage }}
+                </div>
                 <div class="row mt-4 mb-4">
                     <div class="col-12">
                         <Link :href="route('courses.create')" class="btn btn-primary">Δημιουργία Μαθηματος</Link>
@@ -74,6 +74,7 @@
     import dayjs from 'dayjs';
 
     const props = defineProps({
-        courses: Object
+        courses: Object,
+        successMessage: ''
     });
 </script>

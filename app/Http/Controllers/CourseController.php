@@ -6,6 +6,7 @@ use App\Http\Requests\CourseRequest;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class CourseController extends Controller
 {
@@ -65,15 +66,19 @@ class CourseController extends Controller
      */
     public function update(CourseRequest $request, Course $course){
         $data = $request->validated();
-dd($data);
+
         if($request->hasFile('image')) {
+            if($course->image){
+                Storage::disk('public')->delete($course->image);
+            }
+
             $data['image'] = $request->file('image')->store('courses','public');
         }
 
         $course->fill($data);
         $course->save();
 
-        return redirect()->route('courses.index')->withSuccess('Η Ενημέρωση του μαθήματος έγινε με επιτυχία');
+        return redirect()->route('courses.index')->withSuccess('Η Ενημέρωση του μαθήματος έγινε με επιτυχία.');
     }
 
     /**
