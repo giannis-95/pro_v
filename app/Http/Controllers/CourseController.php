@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CourseRequest;
 use App\Models\Course;
-use Illuminate\Http\Request;
+use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -14,10 +15,18 @@ class CourseController extends Controller
      * Display a listing of the resource.
      */
     public function index(){
-        $courses = Course::paginate(10);
+        $user = Auth::user();
+
+        $courses = Course::with('users:id') // φέρνουμε τους users για κάθε course
+        ->paginate(10)
+        ->through(function ($course) use ($user) {
+            // προσθέτουμε ένα extra πεδίο: αν είναι ο χρήστης εγγεγραμμένος
+            $course->is_registered = $course->users->contains($user);
+            return $course;
+        });
 
         return Inertia::render('courses/index',[
-            'courses' => $courses
+            'courses' => $courses,
         ]);
     }
 
@@ -50,6 +59,14 @@ class CourseController extends Controller
         return inertia::render('courses/show',[
             'course' => $course
         ]);
+    }
+
+    public function course_registration($id){
+        $user = User::find(Auth::user()->id);
+
+        $user->courses()->attach($id);
+
+        return redirect()->back()->withSuccess('Η Εγγραφή του Μαθήματος έγινε με επιτυχία.');
     }
 
     /**
@@ -85,6 +102,11 @@ class CourseController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Course $course){
+        if($course->image){
+            Storage::disk('public')->delete($course->image);
+        }
 
+        $course->delete();
+        return redirect()->back()->withSuccess('Η Διαγραφή του μαθήματος έγινε με επιτυχία.');
     }
 }
