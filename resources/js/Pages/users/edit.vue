@@ -39,6 +39,17 @@
                         </div>
                     </div>
                     <div class="form-group row mb-3">
+                        <label class="col-sm-2 col-form-label">Ρόλος</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" v-model="edit_user.role">
+                                <option value="">Επιλέξτε ρόλο του χρήστη...</option>
+                                <option value="Φοιτητής">Φοιτητής</option>
+                                <option value="Καθηγητής">Καθηγητής</option>
+                                <option value="Διαχειριστής">Διαχειριστής</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row mb-3">
                         <label class="col-sm-2 col-form-label">Updated at</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" :value="dayjs(edit_user.updated_at).format('DD-MM-YYYY HH:mm:ss')" disabled>
@@ -69,7 +80,8 @@
         name: props.user.name,
         email: props.user.email,
         password: props.user.password,
-        password_confirmation: props.user.password_confirmation
+        password_confirmation: props.user.password_confirmation,
+        role: props.user.role
     });
 
     function submit(){

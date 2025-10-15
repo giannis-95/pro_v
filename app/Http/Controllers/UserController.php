@@ -11,7 +11,10 @@ use App\Http\Requests\UserRequest;
 class UserController extends Controller
 {
     public function index(){
-        $users = User::paginate(10);
+        $users = User::orderBy('id')->paginate(10)->through(function($user){
+            $user->role =  $user->getRoleNames()->first();
+            return $user;
+        });
 
         return Inertia::render('users/index',[
             'users' => $users,
@@ -19,8 +22,10 @@ class UserController extends Controller
     }
 
     public function show(User $user){
+        $user->role = $user->getRoleNames()->first();
+
         return Inertia::render('users/show',[
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -29,25 +34,30 @@ class UserController extends Controller
     }
 
     public function edit(User $user){
+        $user->role = $user->getRoleNames()->first();
+
         return Inertia::render('users/edit',[
             'user' => $user
         ]);
     }
 
     public function store(UserRequest $request){
-        $user = $request->only([
+        $user_data = $request->only([
             'name',
             'email',
-            'password'
+            'password',
+            'role'
         ]);
 
-        $user['password'] = Hash::make($request->input('password'));
+        $user_data['password'] = Hash::make($request->input('password'));
 
-        User::create([
-            'name' => $user['name'],
-            'email' => $user['email'],
-            'password' => $user['password']
+        $user = User::create([
+            'name' => $user_data['name'],
+            'email' => $user_data['email'],
+            'password' => $user_data['password']
         ]);
+
+        $user->assignRole($user_data['role']);
 
         return redirect()->route('users.index')->withSuccess('Η Δημιουργία του χρήστη έγινε με επιτυχία.');
     }
@@ -56,8 +66,14 @@ class UserController extends Controller
         $data = $request->only([
             'name',
             'email',
-            'password'
+            'password',
         ]);
+
+        $role = $request->input('role');
+
+        if($user->getRoleNames()->first() != $role){
+            $user->syncRoles($role);
+        }
 
         $data['password'] = Hash::make($request->input('password'));
         $user->fill($data);
@@ -67,7 +83,11 @@ class UserController extends Controller
     }
 
     public function destroy(User $user){
+        $role = $user->getRoleNames()->first();
+        $user->removeRole($role);
+
         $user->delete();
+
         return redirect()->back()->withSuccess('Η Διαγραφή του χρήστη έγινε με επιτυχία.');
     }
 }

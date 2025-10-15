@@ -8,6 +8,8 @@ use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestMail;
 
 class CourseController extends Controller
 {
@@ -63,10 +65,42 @@ class CourseController extends Controller
 
     public function course_registration($id){
         $user = User::find(Auth::user()->id);
+        $course = Course::find($id);
+
+        $message = [
+            'title' => 'Εγγραφή Μαθήματος : ' . $course->title,
+            'body' => 'Η εγγραφή σας ολοκληρώθηκε με επιτυχία.'
+        ];
+
+        Mail::to('giannispappas95@gmail.com')->send(new TestMail($message,$course));
 
         $user->courses()->attach($id);
 
         return redirect()->back()->withSuccess('Η Εγγραφή του Μαθήματος έγινε με επιτυχία.');
+    }
+
+    public function unregistration_course($id){
+        $user = User::find(Auth::user()->id);
+
+        $user->courses()->detach($id);
+
+        return redirect()->back()->withSuccess('Η Απεγραφή του Μαθήματος έγινε με επιτυχία.');
+    }
+
+    public function unregistration_course_email($id){
+        $user = User::find(Auth::user()->id);
+        $course = Course::find($id);
+
+        $user->courses()->detach($id);
+
+        $message_title = 'Απεγραφή Μαθήματος : ' . $course->title;
+        $message_body = 'Μόλις κάνατε την απεγραφή του μαθήματος σας.';
+
+        Mail::raw($message_body, function ($mail) use ($message_title) {
+            $mail->to('giannispappas95@gmail.com')->subject($message_title);
+        });
+
+        return redirect()->back()->withSuccess('Η Απεγραφή του Μαθήματος έγινε με επιτυχία.');
     }
 
     /**

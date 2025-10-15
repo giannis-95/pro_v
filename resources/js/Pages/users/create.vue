@@ -38,6 +38,17 @@
                             <input type="password" class="form-control" v-model="create_user.password_confirmation">
                         </div>
                     </div>
+                    <div class="form-group row mb-3">
+                        <label class="col-sm-2 col-form-label">Προσθήκη Ρόλου</label>
+                        <div class="col-sm-10">
+                            <select name="role" class="form-control" v-model="create_user.role" required>
+                                <option value="">Επιλέξτε ρόλο του χρήστη....</option>
+                                <option value="Φοιτητής">Φοιτητής</option>
+                                <option value="Καθηγητής">Καθηγητής</option>
+                                <option value="Διαχειριστής">Διαχειριστής</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="row mt-4">
                         <div class="col">
                             <button type="submit" class="btn btn-primary me-2">Δημιουργία</button>
@@ -58,7 +69,8 @@
         name:'',
         email:'',
         password:'',
-        password_confirmation:''
+        password_confirmation:'',
+        role:''
     });
 
     const props = defineProps({

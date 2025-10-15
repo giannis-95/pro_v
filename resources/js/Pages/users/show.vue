@@ -9,13 +9,19 @@
                 <div class="form-group row mb-3">
                     <label class="col-sm-2 col-form-label">Name</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="name" :value="user.name" disabled>
+                        <input type="text" class="form-control" :value="user.name" disabled>
                     </div>
                 </div>
                 <div class="form-group row mb-3">
                     <label class="col-sm-2 col-form-label">Email</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" name="email" :value="user.email" disabled>
+                        <input type="text" class="form-control" :value="user.email" disabled>
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label class="col-sm-2 col-form-label">Ρόλος</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" :value="user.role" disabled>
                     </div>
                 </div>
                 <div class="row mt-4">

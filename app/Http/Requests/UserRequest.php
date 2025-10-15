@@ -25,7 +25,8 @@ class UserRequest extends FormRequest
         return [
             'email' => ['required' ,'string', 'max:255'],
             'name' => ['required' ,'string', 'max:255'],
-            'password' => ['required' ,'string','max:255', 'confirmed',Rules\Password::defaults()]
+            'password' => ['required' ,'string','max:255', 'confirmed',Rules\Password::defaults()],
+            'role' => ['required','string','in:Φοιτητής,Καθηγητής,Διαχειριστής']
         ];
     }
 }

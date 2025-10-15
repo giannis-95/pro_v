@@ -18,7 +18,9 @@ Route::middleware('auth')->group(function(){
         'courses' => CourseController::class
     ]);
 
-    Route::get('/course/${id}/registration', [CourseController::class,'course_registration'])->name('course.registration');
+    Route::get('/course/${id}/registration',                   [CourseController::class,'course_registration'])->name('course.registration');
+    Route::get('/course/${id}/unregistration_course_email',    [CourseController::class,'unregistration_course_email'])->name('course.unregistration_course_email');
+    Route::get('/course/${id}/unregistration_course',          [CourseController::class,'unregistration_course'])->name('course.unregistration_course');
 });
 
 require __DIR__.'/auth.php';

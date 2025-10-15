@@ -24,7 +24,7 @@
                         <tr v-for="course in courses.data" :key="course.id">
                             <td>
                                 <Link v-if="!course.is_registered" :href="route('course.registration', course.id)" class="btn btn-secondary">Εγγραφή</Link>
-                                <button v-else class="btn btn-secondary" disabled>Εγγραφή</button>
+                                <Link v-else :href="route('course.unregistration_course', course.id)" class="btn btn-danger" disabled>Απεγραφή</Link>
                             </td>
                             <td>{{ course.title }}</td>
                             <td>
