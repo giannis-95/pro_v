@@ -29,6 +29,10 @@ const submit = () => {
             {{ status }}
         </div>
 
+        <div v-if="errorStatus" class="mb-4 text-sm font-medium text-red-600">
+            {{ errorStatus }}
+        </div>
+
         <form @submit.prevent="submit">
             <div>
                 <label>Email</label>
@@ -56,7 +60,7 @@ const submit = () => {
                     autocomplete="current-password"
                 />
 
-                <label class="mt-2" :message="form.errors.password"></label>
+              <p v-if="form.errors.email" class="text-red-600 text-sm mt-1">{{ form.errors.email }}</p>
             </div>
 
             <div class="mt-4 flex items-center justify-end">
@@ -65,7 +69,8 @@ const submit = () => {
                     Forgot your password?
                 </Link>
 
-                <button type="submit" class="btn btn-secondary ms-4" :class="{ 'opacity-25': form.processing }":disabled="form.processing">Log in</button>
+                <button type="submit" class="btn btn-secondary ms-4 me-3" :class="{ 'opacity-25': form.processing }":disabled="form.processing">Log in</button>
+                <Link :href="route('register')" class="btn btn-primary">Register</Link>
             </div>
         </form>
     </GuestLayout>

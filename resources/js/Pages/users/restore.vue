@@ -1,33 +1,33 @@
 <template>
     <div>
-        <div class="modal" :class="{ show: showModal }" tabindex="-1" role="dialog">
+        <div class="modal" :class="{ show: show_restore_modal_user }" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Διαγραφή Χρήστη</h5>
+                        <h5 class="modal-title">Επαναφορά Χρήστη</h5>
                         <button type="button" class="btn-close" @click="$emit('close')"></button>
                     </div>
                     <div class="modal-body">
-                        Είσαι σίγουρος ότι θέλεις να αφαιρέσεις τον χρήστη <strong>{{ user?.name}}</strong> από την εφαρμογή ;
+                        Είσαι σίγουρος ότι θέλεις να επαναφέρεις τον χρήστη <strong>{{ user?.name}}</strong> από την εφαρμογή ;
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" @click="$emit('close')">Ακύρωση</button>
-                        <button type="submit" class="btn btn-danger" @click="$emit('confirm-delete', user)">Διαγραφή</button>
+                        <button type="submit" class="btn btn-primary" @click="$emit('restore-user', user)">Επαναφορά</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div v-if="showModal" class="modal-backdrop"></div>
+        <div v-if="show_restore_modal_user" class="modal-backdrop"></div>
     </div>
 </template>
 
 <script setup>
     const props = defineProps({
         user: Object,
-        showModal: Boolean
+        show_restore_modal_user: Boolean
     });
 
-    const emit = defineEmits(['close', 'confirm-delete']);
+    const emit = defineEmits(['close', 'restore-user']);
 </script>
 
 
