@@ -19,6 +19,7 @@ const open = ref(false);
                                 <Link :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</Link>
                                 <Link :href="route('users.index')">Users</Link>
                                 <Link :href="route('courses.index')">Courses</Link>
+                                <Link :href="route('courses.my-course')">My Courses</Link>
                             </div>
                         </div>
 

@@ -53,7 +53,7 @@ class CoursePolicy
      */
     public function restore(User $user, Course $course): bool
     {
-        return false;
+        return $user->getRoleNames()->first() === 'Διαχειριστής';
     }
 
     /**
@@ -61,6 +61,6 @@ class CoursePolicy
      */
     public function forceDelete(User $user, Course $course): bool
     {
-        return false;
+        return $user->getRoleNames()->first() === 'Διαχειριστής';
     }
 }

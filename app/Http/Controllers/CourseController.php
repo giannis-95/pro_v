@@ -10,22 +10,24 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TestMail;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class CourseController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
     public function index(){
         $user = Auth::user();
 
-        $courses = Course::with('users:id') // φέρνουμε τους users για κάθε course
-        ->paginate(10)
-        ->through(function ($course) use ($user) {
-            // προσθέτουμε ένα extra πεδίο: αν είναι ο χρήστης εγγεγραμμένος
-            $course->is_registered = $course->users->contains($user);
-            return $course;
-        });
+        $courses = Course::withTrashed()
+                    ->paginate(10)
+                    ->through(function ($course) use ($user) {
+                        $course->is_registered = $course->users->contains($user);
+                        $course->is_deleted = $course->trashed();
+                        return $course;
+                    });
 
         return Inertia::render('courses/index',[
             'courses' => $courses,
@@ -37,6 +39,16 @@ class CourseController extends Controller
      */
     public function create(){
         return inertia::render('courses/create');
+    }
+
+    public function my_course(){
+        $id = Auth::user()->id;
+
+        $courses = User::findOrFail($id)->courses()->paginate(10);
+
+        return Inertia::render('courses/my-course',[
+            'courses' => $courses,
+        ]);
     }
 
     /**
@@ -65,7 +77,7 @@ class CourseController extends Controller
 
     public function course_registration($id){
         $user = User::find(Auth::user()->id);
-        $course = Course::find($id);
+        $course = Course::findOrFail($id);
 
         $message = [
             'title' => 'Εγγραφή Μαθήματος : ' . $course->title,
@@ -89,7 +101,7 @@ class CourseController extends Controller
 
     public function unregistration_course_email($id){
         $user = User::find(Auth::user()->id);
-        $course = Course::find($id);
+        $course = Course::findOrFail($id);
 
         $user->courses()->detach($id);
 
@@ -101,6 +113,17 @@ class CourseController extends Controller
         });
 
         return redirect()->back()->withSuccess('Η Απεγραφή του Μαθήματος έγινε με επιτυχία.');
+    }
+
+
+    public function restore($id){
+        $course = Course::onlyTrashed()->findOrFail($id);
+
+        $this->authorize('restore',$course);
+
+        $course->restore();
+
+        return redirect()->route('courses.index')->withSuccess('Η Επαναφορά του μαθήματος έγινε με επιτυχία.');
     }
 
     /**
@@ -142,5 +165,15 @@ class CourseController extends Controller
 
         $course->delete();
         return redirect()->back()->withSuccess('Η Διαγραφή του μαθήματος έγινε με επιτυχία.');
+    }
+
+    public function final_deleted($id){
+        $course = Course::onlyTrashed()->findOrFail($id);
+
+        $this->authorize('forceDelete',$course);
+
+        $course->forceDelete();
+
+        return redirect()->route('courses.index')->withSuccess('Η Οριστική Διαγραφή του μαθήματος έγινε με επιτυχία.');
     }
 }

@@ -88,8 +88,6 @@ class UserController extends Controller
     }
 
     public function destroy(User $user){
-        // $this->isAuthorized($user);
-
         $this->authorize('delete', $user);
 
         $user->delete();
@@ -119,13 +117,4 @@ class UserController extends Controller
 
         return redirect()->back()->withSuccess('Η οριστική διαγραφή του χρήστη έγινε με επιτυχία.');
     }
-
-
-    // protected function isAuthorized(User $user){
-    //     if ($user->getRoleNames()->first() == 'Διαχειριστής' && $user->email == 'admin@admin.com') {
-    //         throw ValidationException::withMessages([
-    //             'unauthorizedAction' => __('validation.action'),
-    //         ]);
-    //     }
-    // }
 }

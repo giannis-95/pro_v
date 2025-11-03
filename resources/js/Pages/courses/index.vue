@@ -23,8 +23,10 @@
                     <tbody>
                         <tr v-for="course in courses.data" :key="course.id">
                             <td>
-                                <Link v-if="!course.is_registered" :href="route('course.registration', course.id)" class="btn btn-secondary">Εγγραφή</Link>
-                                <Link v-else :href="route('course.unregistration_course', course.id)" class="btn btn-danger" disabled>Απεγραφή</Link>
+                                <div v-if="!course.is_deleted">
+                                    <Link v-if="!course.is_registered" :href="route('course.registration', course.id)" class="btn btn-secondary">Εγγραφή</Link>
+                                    <Link v-else :href="route('course.unregistration_course', course.id)" class="btn btn-danger" disabled>Απεγραφή</Link>
+                                </div>
                             </td>
                             <td>{{ course.title }}</td>
                             <td>
@@ -45,14 +47,27 @@
                                     </svg>
                                 </Link>
 
-                                <button @click="openModalCourse(course)" class="btn btn-danger">
+                                <button v-if="!course.is_deleted" @click="openModalCourse(course)" class="btn btn-danger">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
                                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0
                                     0 0-1 0v6a.5.5 0 0 0 1 0V6z" /> <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /> </svg>
                                 </button>
+
+                                <button v-if="course.is_deleted" @click="openModalRestoreCourse(course)" class="btn btn-dark btn-sm">Επαναφορά</button>
+                                <button v-if="course.is_deleted" @click="openModalFinalDeletedCourse(course)" class="btn btn-info btn-sm" style="margin-left: 5px;">Οριστική Διαγραφή</button>
                             </td>
                         </tr>
+
                         <DeleteCourse :course="deleteCourse" :showModal="showModal" @close="showModal = false" @confirm-delete="confirmDeleteCourse"></DeleteCourse>
+
+                        <RestoreCourse :course="restore_course" :show_modal_restore_course="show_modal_restore_course"
+                            @close="show_modal_restore_course = false" @restore-course="restoreCourse">
+                        </RestoreCourse>
+
+                        <FinalDeletedCourse :course="final_deleted_course" :show_modal_final_deleted_course="show_modal_final_deleted_course"
+                            @close="show_modal_final_deleted_course = false" @final-delete-course="finalDeleteCourse">
+                        </FinalDeletedCourse>
+
                         <tr v-if="courses?.length === 0">
                             <td colspan="5" style="text-align: center;">Δεν υπάρχουν μαθήματα</td>
                         </tr>
@@ -78,23 +93,50 @@
     import dayjs from 'dayjs';
     import { ref } from 'vue';
     import DeleteCourse from '@/Pages/courses/delete.vue';
+    import RestoreCourse from '@/Pages/courses/restore.vue';
+    import FinalDeletedCourse from '@/Pages/courses/final-deleted.vue';
 
     const props = defineProps({
         courses: Object,
         successMessage: ''
     });
 
-    console.log(props.courses.users);
     const showModal = ref(false);
+    const show_modal_restore_course = ref(false);
+    const show_modal_final_deleted_course = ref(false);
+
     const deleteCourse = ref(null);
+    const restore_course = ref(null);
+    const final_deleted_course = ref(null);
 
     function openModalCourse(course){
         deleteCourse.value = course;
         showModal.value = true;
     }
 
+    function openModalRestoreCourse(course){
+        restore_course.value = course;
+        show_modal_restore_course.value = true;
+    }
+
+    function openModalFinalDeletedCourse(course){
+        final_deleted_course.value = course;
+        show_modal_final_deleted_course.value = true;
+    }
+
     function confirmDeleteCourse(course){
         router.delete(`/courses/${course.id}`)
         showModal.value = false;
+    }
+
+    function restoreCourse(course){
+        console.log(course);
+        router.get(`/course/${course.id}/restore`)
+        show_modal_restore_course.value = false;
+    }
+
+    function finalDeleteCourse(course){
+        router.get(`/course/${course.id}/final_deleted`)
+        show_modal_restore_course.value = false;
     }
 </script>
