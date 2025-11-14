@@ -25,6 +25,8 @@
         "@popperjs/core": "^2.11.8",
         "bootstrap": "^5.3.8",
         "dayjs": "^1.11.18",
+        "laravel-echo": "^2.2.6",
+        "pusher-js": "^8.4.0",
         "ziggy-js": "^2.6.0"
     }
 }

@@ -93,7 +93,7 @@
     import DeleteUser from '@/Pages/users/delete.vue';
     import RestoreUser from '@/Pages/users/restore.vue';
     import FinalDeletedUser from '@/Pages/users/final-deleted.vue';
-import { computed } from 'vue';
+    import { computed } from 'vue';
 
     const showModal = ref(false);
     const show_restore_modal_user = ref(false);

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -29,6 +30,9 @@ Route::middleware('auth')->group(function(){
     Route::get('/course/my-course',                           [CourseController::class,'my_course'])->name('courses.my-course');
     Route::get('/course/{id}/restore',                        [CourseController::class,'restore'])->name('course.restore');
     Route::get('/course/{id}/final_deleted',                  [CourseController::class,'final_deleted'])->name('course.final_deleted');
+
+    // notification
+    Route::post('/send-notification',                          [NotificationController::class, 'sendNotification']);
 });
 
 require __DIR__.'/auth.php';

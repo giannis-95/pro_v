@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TestMail;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use WebSocket\Client;
+use App\Notifications\CourseRegistered;
 
 class CourseController extends Controller
 {
@@ -79,15 +81,36 @@ class CourseController extends Controller
         $user = User::find(Auth::user()->id);
         $course = Course::findOrFail($id);
 
-        $message = [
-            'title' => 'Εγγραφή Μαθήματος : ' . $course->title,
-            'body' => 'Η εγγραφή σας ολοκληρώθηκε με επιτυχία.'
-        ];
+        // $message = [
+        //     'title' => 'Εγγραφή Μαθήματος : ' . $course->title,
+        //     'body' => 'Η εγγραφή σας ολοκληρώθηκε με επιτυχία.'
+        // ];
 
-        Mail::to('giannispappas95@gmail.com')->send(new TestMail($message,$course));
+        // Mail::to('giannispappas95@gmail.com')->send(new TestMail($message,$course));
 
-        $user->courses()->attach($id);
+        // $user->courses()->attach($id);
 
+        // $user->notify(new CourseRegistered($course));
+
+
+        // $data = [
+        //     'message' => "Ο/Η {$user->name} εγγράφηκε στο μάθημα: {$course->title}"
+        // ];
+
+        // Σύνδεση με WebSocket server και αποστολή μηνύματος
+
+        // try {
+        //     // Δημιουργούμε client και συνδεόμαστε στον WebSocket server
+        //     $client = new Client("ws://127.0.0.1:6001");
+
+        //     // Στέλνουμε το μήνυμα (το library φροντίζει το WebSocket protocol)
+        //     $client->send(json_encode($data));
+
+        //     // Κλείνουμε τη σύνδεση
+        //     $client->close();
+        // } catch (\Exception $e) {
+
+        // }
         return redirect()->back()->withSuccess('Η Εγγραφή του Μαθήματος έγινε με επιτυχία.');
     }
 

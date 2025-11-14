@@ -8,6 +8,20 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
+// import Echo from 'laravel-echo';
+// import Pusher from 'pusher-js';
+
+// window.Pusher = Pusher;
+
+// window.Echo = new Echo({
+//     broadcaster: 'pusher',
+//     key: 'local',            // το key δεν χρειάζεται να είναι πραγματικό για local websockets
+//     wsHost: window.location.hostname,
+//     wsPort: 6001,            // port που τρέχει το laravel-websockets
+//     forceTLS: false,
+//     disableStats: true,
+// });
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({

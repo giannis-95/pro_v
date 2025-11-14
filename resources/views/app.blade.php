@@ -15,6 +15,9 @@
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
+    <script>
+        window.userId = @json(auth()->id());
+    </script>
     <body class="font-sans antialiased">
         @inertia
     </body>
