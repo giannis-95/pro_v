@@ -7,6 +7,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import Echo from 'laravel-echo';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -23,4 +24,12 @@ createInertiaApp({
             .use(ZiggyVue)
             .mount(el);
     },
+});
+
+
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    wsHost: window.location.hostname,
+    wsPort: 8080,
+    forceTLS: false,
 });
