@@ -12,11 +12,20 @@ defineProps({
 });
 
 const form = useForm({
-    email: '',
-    password: '',
+    email: localStorage.getItem('rememberedEmail') || '',
+    password: localStorage.getItem('rememberedPassword') || '',
+    remember: !!localStorage.getItem('rememberedEmail')
 });
 
 const submit = () => {
+    if(form.remember){
+        localStorage.setItem('rememberedEmail', form.email);
+        localStorage.setItem('rememberedPassword', form.password);
+    }else{
+        localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('rememberedPassword');
+    }
+
     form.post(route('login'), {
         onFinish: () => form.reset('password'),
     });
@@ -61,6 +70,11 @@ const submit = () => {
                 />
 
               <p v-if="form.errors.email" class="text-red-600 text-sm mt-1">{{ form.errors.email }}</p>
+            </div>
+
+            <div class="mt-4">
+                <input type="checkbox" id="remember" v-model="form.remember">
+                <label>Remember Me</label>
             </div>
 
             <div class="mt-4 flex items-center justify-end">

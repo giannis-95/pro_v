@@ -39,7 +39,15 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
-        $request->authenticate();
+        $remember = $request->has('remember');
+
+        if(!Auth::attempt($request->only('email', 'password'), $remember)) {
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        }
+
+        // $request->authenticate();
 
         $request->session()->regenerate();
 
