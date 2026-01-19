@@ -30,6 +30,11 @@ Route::middleware('auth')->group(function(){
     Route::get('/course/my-course',                           [CourseController::class,'my_course'])->name('courses.my-course');
     Route::get('/course/{id}/restore',                        [CourseController::class,'restore'])->name('course.restore');
     Route::get('/course/{id}/final_deleted',                  [CourseController::class,'final_deleted'])->name('course.final_deleted');
+
+    //Notifications
+    Route::get('notifications',                                 [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('notifications/{id}/read',                      [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('notifications/read-all',                       [NotificationController::class, 'markAllAsRead'])->name('notifications.read-all');
 });
 
 require __DIR__.'/auth.php';

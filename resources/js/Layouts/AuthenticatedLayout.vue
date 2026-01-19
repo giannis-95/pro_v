@@ -1,49 +1,34 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
-window.Pusher = Pusher;
 
-const notifications = ref([]);
-const showDropdown = ref(false);
+// import { ref, onMounted } from 'vue';
+
+// const notification = ref({
+//     show: false,
+//     message: "",
+//     color: "success",
+// });
+
 const open = ref(false);
 const showingNavigationDropdown = ref(false);
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
-const toggleDropdown = () => {
-    showDropdown.value = !showDropdown.value;
-};
-
 const userId = window.userId || null;
 
-onMounted(() => {
-    if (!userId) return console.warn('User ID missing!');
-
-    if (!window.Echo) {
-        window.Echo = new Echo({
-            broadcaster: 'pusher',
-            key: import.meta.env.VITE_PUSHER_APP_KEY,
-            cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-            forceTLS: true,
-        });
-    }
-
-   window.Echo.private(`App.Models.User.${userId}`)
-    .notification((notification) => {
-        // debug για να δεις τι έρχεται
-        console.log(notification);
-
-        // προσθέτουμε στο array μόνο το message από data
-        notifications.value.unshift(notification.data.message);
-    });
-});
+// onMounted(() => {
+//     window.Echo.private(`App.Models.User.${userId}`).notification((notificationPayload) => {
+//         notification.value.message = notificationPayload.message;
+//         notification.value.show = true;
+//         notification.value.color = "info"; // ή success
+//     });
+// });
 </script>
 
 <template>
 <div>
-    <div class="min-h-screen bg-gray-100">
-        <nav class="border-b border-gray-100 bg-white">
+    <div class="min-h-screen">
+        <nav class="border-b bg-white">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 justify-between">
                     <div class="flex">
@@ -55,24 +40,25 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <!-- Notification Icon -->
-                    <div class="notification-wrapper">
-                        <div class="notification-icon" @click="toggleDropdown">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 1.985-1.75H6.015A2 2 0 0 0 8 16z"/>
-                                <path d="M8 1a4 4 0 0 1 4 4v2.086a1.5 1.5 0 0 0 .293.879l.823 1.03A1 1 0 0 1 12.382 11H3.618a1 1 0 0 1-.734-1.671l.823-1.03A1.5 1.5 0 0 0 4 7.086V5a4 4 0 0 1 4-4z"/>
-                            </svg>
-                            <span v-if="notifications.length" class="badge">{{ notifications.length }}</span>
-                        </div>
 
-                        <div class="notification-dropdown" v-show="showDropdown">
-                            <div v-if="notifications.length === 0" class="notification-item">
-                                No notifications
-                            </div>
-                            <div v-for="(notif, index) in notifications" :key="index" class="notification-item">
-                                {{ notif }}
-                            </div>
-                        </div>
-                    </div>
+                   <!-- <template>
+                        <v-snackbar
+                            v-model="notification.show"
+                            color="info"
+                            timeout="3000"
+                            location="bottom right"
+                        >
+                            {{ notification.message }}
+
+                            <template #actions>
+                                <v-btn color="white" variant="text" @click="notification.show = false">
+                                    Κλείσιμο
+                                </v-btn>
+                            </template>
+                        </v-snackbar>
+
+                        <slot/>
+                    </template> -->
 
                     <!-- User Dropdown -->
                     <div class="hidden sm:ms-6 sm:flex sm:items-center">
@@ -96,6 +82,17 @@ onMounted(() => {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <!-- Notification Icon -->
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-primary" id="dropdownNotification" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-left: 60px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6"/>
+                                </svg>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownNotification">
+                                <a class="dropdown-item" href="#">Action</a>
                             </div>
                         </div>
                     </div>
@@ -140,8 +137,9 @@ onMounted(() => {
 </div>
 </template>
 
+
 <style scoped>
-.notification-wrapper {
+/* .notification-wrapper {
   position: relative;
   display: inline-block;
 }
@@ -181,5 +179,5 @@ onMounted(() => {
 
 .notification-item:last-child {
   border-bottom: none;
-}
+} */
 </style>

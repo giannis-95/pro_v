@@ -130,7 +130,6 @@
     }
 
     function restoreCourse(course){
-        console.log(course);
         router.get(`/course/${course.id}/restore`)
         show_modal_restore_course.value = false;
     }

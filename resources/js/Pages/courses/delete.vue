@@ -30,6 +30,7 @@
     const emit = defineEmits(['close','confirm-delete']);
 </script>
 
+
 <style scoped>
 .modal {
   position: fixed;

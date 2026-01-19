@@ -26,7 +26,7 @@ const submit = () => {
         localStorage.removeItem('rememberedPassword');
     }
 
-    form.post(route('login'), {
+    form.post('/login',{
         onFinish: () => form.reset('password'),
     });
 };
