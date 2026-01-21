@@ -8,20 +8,25 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Validation\ValidationException;
+use App\Filters\UserFilter;
 
 class UserController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(){
-        $users = User::withTrashed()->orderBy('id')->paginate(10)->through(function($user){
-            $user->role = $user->getRoleNames()->first();
-            $user->is_deleted = $user->trashed();
-            return $user;
-        });
+    public function index(Request $request){
+        $filter = new UserFilter($request);
 
-        return Inertia::render('users/index',[
+        $users = $filter->apply(User::withTrashed())
+            ->orderBy('id')
+            ->paginate(10)
+            ->through(function($user) {
+                $user->role = $user->getRoleNames()->first();
+                $user->is_deleted = $user->trashed();
+                return $user;
+            });
+
+        return Inertia::render('users/index', [
             'users' => $users,
         ]);
     }
