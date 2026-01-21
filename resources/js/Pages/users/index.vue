@@ -45,21 +45,21 @@
                                     <div class="row">
                                         <label class="col col-form-label">Από :</label>
                                         <div class="col-5">
-                                            <input type="date" class="form-control" v-model="filters.from_date">
+                                            <input type="date" class="form-control" v-model="filters.date_from">
                                         </div>
                                         <label class="col col-form-label">Εως :</label>
                                         <div class="col-5">
-                                            <input type="date" class="form-control" v-model="filters.to_date">
+                                            <input type="date" class="form-control" v-model="filters.date_to">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mt-4">
                                 <div class="col-6">
-                                    <button @click="applyFilters()" class="btn btn-primary">Αναζήτηση</button>
+                                    <button @click="searchFilterUser" class="btn btn-primary">Αναζήτηση</button>
                                 </div>
                                 <div class="col-6 text-end">
-                                    <button @click="resetFilters()" class="btn btn-danger" >Καθαρισμός</button>
+                                    <button @click="resetFilterUser" class="btn btn-danger" >Καθαρισμός</button>
                                 </div>
                             </div>
                         </div>
@@ -175,10 +175,10 @@
     });
 
     const filters = reactive({
-        name: '',
-        role: '',
-        from_date: '',
-        to_date: ''
+        name:'',
+        role:'',
+        date_to:'',
+        date_from:''
     });
 
     function openDeleteModal(user){
@@ -211,18 +211,18 @@
         show_final_deleted_modal_user.value = true;
     }
 
-    function applyFilters() {
-        router.get('/users', filters, {
+    function searchFilterUser(){
+        router.get(`/users`,filters,{
             preserveState: true,
             replace: true
         });
     }
 
-    function resetFilters() {
+    function resetFilterUser(){
         filters.name = '';
         filters.role = '';
-        filters.from_date = '';
-        filters.to_date = '';
-        applyFilters();
+        filters.date_from = '';
+        filters.date_to ='';
+        searchFilterUser();
     }
 </script>

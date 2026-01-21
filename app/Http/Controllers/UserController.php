@@ -15,9 +15,9 @@ class UserController extends Controller
     use AuthorizesRequests;
 
     public function index(Request $request){
-        $filter = new UserFilter($request);
+        $userFilter = new UserFilter($request);
 
-        $users = $filter->apply(User::withTrashed())
+        $users = $userFilter->apply(User::withTrashed())
             ->orderBy('id')
             ->paginate(10)
             ->through(function($user) {
