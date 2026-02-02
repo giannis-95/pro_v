@@ -1,7 +1,8 @@
 <template>
     <AuthenticatedLayout>
-        <div>
-            <div class="container mt-4">
+        <div class="container mt-4">
+            <filterCourses @search="filterSearch" @reset="filterReset"></filterCourses>
+            <div style="margin-top: 20px;">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -44,10 +45,22 @@
 
 <script setup>
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-    import { Link } from '@inertiajs/vue3';
+    import { Link , router} from '@inertiajs/vue3';
     import dayjs from 'dayjs';
+    import filterCourses from '@/Pages/filters/filterCourses.vue';
 
     const props = defineProps({
         courses: Object,
     });
+
+    function filterSearch(filters){
+        router.get(`/courses`,filters,{
+            preserveState:true,
+            replace:true
+        });
+    }
+
+    function filterReset(){
+        router.get(`/courses`,{});
+    }
 </script>

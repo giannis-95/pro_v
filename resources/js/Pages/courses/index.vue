@@ -5,6 +5,7 @@
                 <div v-if="successMessage" class="alert alert-success">
                     {{ successMessage }}
                 </div>
+                <filterCourses @search="filterSearch" @reset="filterReset"></filterCourses>
                 <div class="row mt-4 mb-4">
                     <div class="col-12">
                         <Link :href="route('courses.create')" class="btn btn-primary">Δημιουργία Μαθηματος</Link>
@@ -95,6 +96,7 @@
     import DeleteCourse from '@/Pages/courses/delete.vue';
     import RestoreCourse from '@/Pages/courses/restore.vue';
     import FinalDeletedCourse from '@/Pages/courses/final-deleted.vue';
+    import filterCourses from '@/Pages/filters/filterCourses.vue'
 
     const props = defineProps({
         courses: Object,
@@ -137,5 +139,16 @@
     function finalDeleteCourse(course){
         router.get(`/course/${course.id}/final_deleted`)
         show_modal_restore_course.value = false;
+    }
+
+    function filterSearch(filters){
+        router.get(`/courses`,filters,{
+            preserveState:true,
+            replace:true
+        });
+    }
+
+    function filterReset(){
+        router.get(`/courses`,{});
     }
 </script>

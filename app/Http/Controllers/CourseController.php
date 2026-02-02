@@ -9,10 +9,9 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\TestMail;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use WebSocket\Client;
-use App\Notifications\CourseRegistered;
+use App\Filters\CourseFilter;
+use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
@@ -20,10 +19,12 @@ class CourseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(){
+    public function index(Request $request){
+        $filter_course = new CourseFilter($request);
+
         $user = Auth::user();
 
-        $courses = Course::withTrashed()
+        $courses = $filter_course->filterCourses(Course::withTrashed())
                     ->paginate(10)
                     ->through(function ($course) use ($user) {
                         $course->is_registered = $course->users->contains($user);
@@ -88,7 +89,7 @@ class CourseController extends Controller
 
         // Mail::to('giannispappas95@gmail.com')->send(new TestMail($message,$course));
 
-        // $user->courses()->attach($id);
+        $user->courses()->attach($id);
 
         // $user->notify(new CourseRegistered($course));
 
@@ -97,20 +98,6 @@ class CourseController extends Controller
         //     'message' => "Ο/Η {$user->name} εγγράφηκε στο μάθημα: {$course->title}"
         // ];
 
-        // Σύνδεση με WebSocket server και αποστολή μηνύματος
-
-        // try {
-        //     // Δημιουργούμε client και συνδεόμαστε στον WebSocket server
-        //     $client = new Client("ws://127.0.0.1:6001");
-
-        //     // Στέλνουμε το μήνυμα (το library φροντίζει το WebSocket protocol)
-        //     $client->send(json_encode($data));
-
-        //     // Κλείνουμε τη σύνδεση
-        //     $client->close();
-        // } catch (\Exception $e) {
-
-        // }
         return redirect()->back()->withSuccess('Η Εγγραφή του Μαθήματος έγινε με επιτυχία.');
     }
 
