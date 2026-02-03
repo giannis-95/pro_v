@@ -7,7 +7,14 @@
             <div v-if="$page.props.errors.unauthorizedAction" class="alert alert-danger">
                 {{ $page.props.errors.unauthorizedAction }}
             </div>
-            <filterUsers @search="searchFilterUser" @reset="resetFilterUser"></filterUsers>
+            <div class="row mt-3 mb-3">
+                <div class="col">
+                    <button class="btn btn-primary" @click="showFilters = !showFilters">
+                        {{ showFilters ? 'Κλείσιμο Φίλτρων' : 'Φίλτρα' }}
+                    </button>
+                </div>
+            </div>
+            <filterUsers v-if="showFilters" @search="searchFilterUser" @reset="resetFilterUser"></filterUsers>
             <div class="row">
                 <div class="col mt-3 mb-3">
                     <Link :href="route('users.create')" class="btn btn-primary">Δημιουργία Χρήστη</Link>
@@ -100,6 +107,7 @@
     const showModal = ref(false);
     const show_restore_modal_user = ref(false);
     const show_final_deleted_modal_user = ref(false);
+    const showFilters = ref(false);
 
     const userToDelete = ref(null);
     const userToRestore = ref(null);
@@ -150,11 +158,14 @@
     function searchFilterUser(filters){
         router.get(`/users`,filters,{
             preserveState: true,
-            replace: true
+            replace: true,
+            onFinish: () => showFilters.value = false
         });
     }
 
     function resetFilterUser(){
-        router.get(`/users`,{});
+        router.get(`/users`,{},{
+               onFinish: () => showFilters.value = false
+        });
     }
 </script>
