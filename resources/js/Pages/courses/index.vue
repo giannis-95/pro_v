@@ -5,7 +5,14 @@
                 <div v-if="successMessage" class="alert alert-success">
                     {{ successMessage }}
                 </div>
-                <filterCourses @search="filterSearch" @reset="filterReset"></filterCourses>
+                <div class="row">
+                    <div class="col">
+                         <div class="btn btn-primary" @click="showCourseFilters =! showCourseFilters">
+                            {{ showCourseFilters ? 'κλείσιμο φίλτρων' : 'Φίλτρα' }}
+                        </div>
+                    </div>
+                </div>
+                <filterCourses v-if="showCourseFilters" @search="filterSearch" @reset="filterReset"></filterCourses>
                 <div class="row mt-4 mb-4">
                     <div class="col-12">
                         <Link :href="route('courses.create')" class="btn btn-primary">Δημιουργία Μαθηματος</Link>
@@ -58,21 +65,14 @@
                                 <button v-if="course.is_deleted" @click="openModalFinalDeletedCourse(course)" class="btn btn-info btn-sm" style="margin-left: 5px;">Οριστική Διαγραφή</button>
                             </td>
                         </tr>
-
-                        <DeleteCourse :course="deleteCourse" :showModal="showModal" @close="showModal = false" @confirm-delete="confirmDeleteCourse"></DeleteCourse>
-
-                        <RestoreCourse :course="restore_course" :show_modal_restore_course="show_modal_restore_course"
-                            @close="show_modal_restore_course = false" @restore-course="restoreCourse">
-                        </RestoreCourse>
-
-                        <FinalDeletedCourse :course="final_deleted_course" :show_modal_final_deleted_course="show_modal_final_deleted_course"
-                            @close="show_modal_final_deleted_course = false" @final-delete-course="finalDeleteCourse">
-                        </FinalDeletedCourse>
-
                         <tr v-if="courses?.length === 0">
                             <td colspan="5" style="text-align: center;">Δεν υπάρχουν μαθήματα</td>
                         </tr>
                     </tbody>
+
+                    <DeleteCourse :course="deleteCourse" @confirm-delete="confirmDeleteCourse"/>
+                    <RestoreCourse :course="restore_course" @restore-course="restoreCourse"/>
+                    <FinalDeletedCourse :course="final_deleted_course" @final-delete-course="finalDeleteCourse"/>
                 </table>
                 <div class="mt-4">
                     <Link v-for="link in courses.links" :key="link.label" v-html="link.label" v-bind="link.url ? { href: link.url } : {}"
@@ -89,6 +89,7 @@
 </template>
 
 <script setup>
+    import { Modal } from 'bootstrap';
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
     import { Link, router } from '@inertiajs/vue3';
     import dayjs from 'dayjs';
@@ -98,47 +99,62 @@
     import FinalDeletedCourse from '@/Pages/courses/final-deleted.vue';
     import filterCourses from '@/Pages/filters/filterCourses.vue'
 
-    const props = defineProps({
-        courses: Object,
-        successMessage: ''
+    defineProps({
+        courses: {
+            type: Object,
+            required:true
+        },
+        successMessage:{
+            type:String,
+            default:''
+        }
     });
 
-    const showModal = ref(false);
-    const show_modal_restore_course = ref(false);
-    const show_modal_final_deleted_course = ref(false);
-
+    const showCourseFilters = ref(false);
     const deleteCourse = ref(null);
     const restore_course = ref(null);
     const final_deleted_course = ref(null);
 
     function openModalCourse(course){
         deleteCourse.value = course;
-        showModal.value = true;
+        const delete_course_modal = document.getElementById('deleteCourseModal');
+        const modal = new Modal(delete_course_modal);
+        modal.show();
     }
 
     function openModalRestoreCourse(course){
         restore_course.value = course;
-        show_modal_restore_course.value = true;
+        const restore_course_modal = document.getElementById('restoreCourseModal');
+        const modal = new Modal(restore_course_modal);
+        modal.show();
     }
 
     function openModalFinalDeletedCourse(course){
         final_deleted_course.value = course;
-        show_modal_final_deleted_course.value = true;
+        const final_deleted_course_modal = document.getElementById('finalDeletedCourse');
+        const modal = new Modal(final_deleted_course_modal);
+        modal.show();
     }
 
     function confirmDeleteCourse(course){
+        const confirm_delete_course_modal = document.getElementById('deleteCourseModal');
+        const confirm_delete_course_instance_modal = Modal.getInstance(confirm_delete_course_modal) || new Modal(confirm_delete_course_modal);
+        confirm_delete_course_instance_modal.hide();
         router.delete(`/courses/${course.id}`)
-        showModal.value = false;
     }
 
     function restoreCourse(course){
-        router.get(`/course/${course.id}/restore`)
-        show_modal_restore_course.value = false;
+        const restore_course_modal = document.getElementById('restoreCourseModal');
+        const restore_course_instance_modal = Modal.getInstance(restore_course_modal) || new Modal(restore_course_modal);
+        restore_course_instance_modal.hide();
+        router.get(`/course/${course.id}/restore`);
     }
 
     function finalDeleteCourse(course){
-        router.get(`/course/${course.id}/final_deleted`)
-        show_modal_restore_course.value = false;
+        const final_deleted_course = document.getElementById('finalDeletedCourse');
+        const final_deleted_course_instance_modal = Modal.getInstance(final_deleted_course) || new Modal(final_deleted_course);
+        final_deleted_course_instance_modal.hide();
+        router.get(`/course/${course.id}/final_deleted`);
     }
 
     function filterSearch(filters){

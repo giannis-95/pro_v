@@ -1,9 +1,8 @@
 <template>
     <div class="row">
         <div class="col">
-            <button type="button" class="btn btn-primary dropdown-toggle" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Φίλτρα</button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="width: 1400px;height: 250px;">
-                <div class="container">
+            <div class="card">
+                <div class="container mt-4">
                     <div class="row">
                         <div class="col">
                             <div class="row">
@@ -31,7 +30,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-4">
+                    <div class="row mt-4 mb-4">
                         <div class="col-6">
                             <button @click="filterSearch" class="btn btn-primary">Αναζήτηση</button>
                         </div>

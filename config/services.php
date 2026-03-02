@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'sinch' => [
+        'service_plan_id' => env('SINCH_SERVICE_PLAN_ID'),
+        'token' => env('SINCH_API_TOKEN'),
+        'sender' => env('SINCH_SENDER'),
+    ],
+
 ];

@@ -9,12 +9,12 @@
             </div>
             <div class="row mt-3 mb-3">
                 <div class="col">
-                    <button class="btn btn-primary" @click="showFilters = !showFilters">
-                        {{ showFilters ? 'Κλείσιμο Φίλτρων' : 'Φίλτρα' }}
+                    <button class="btn btn-primary" @click="showUserFilters =! showUserFilters">
+                        {{ showUserFilters ? 'Κλείσιμο Φίλτρων' : 'Φίλτρα' }}
                     </button>
                 </div>
             </div>
-            <filterUsers v-if="showFilters" @search="searchFilterUser" @reset="resetFilterUser"></filterUsers>
+            <filterUsers v-if="showUserFilters" @search="searchFilterUser" @reset="resetFilterUser"></filterUsers>
             <div class="row">
                 <div class="col mt-3 mb-3">
                     <Link :href="route('users.create')" class="btn btn-primary">Δημιουργία Χρήστη</Link>
@@ -69,16 +69,10 @@
                             </div>
                         </td>
                     </tr>
-                    <DeleteUser :user="userToDelete" :showModal="showModal" @close="showModal = false" @confirm-delete="deleteUser"></DeleteUser>
-
-                    <RestoreUser :user="userToRestore" :show_restore_modal_user="show_restore_modal_user"
-                        @close="show_restore_modal_user = false" @restore-user="restoreUser">
-                    </RestoreUser>
-
-                    <FinalDeletedUser :user="userToFinalDelete" :show_final_deleted_modal_user="show_final_deleted_modal_user"
-                        @close="show_final_deleted_modal_user =false" @final-delete="finalDeleteUser">
-                    </FinalDeletedUser>
                 </tbody>
+                <DeleteUser :user="userToDelete" @confirm-delete="deleteUser"/>
+                <RestoreUser :user="userToRestore" @restore-user="restoreUser"/>
+                <FinalDeletedUser :user="userToFinalDelete" @final-delete="finalDeleteUser"/>
             </table>
             <div class="mt-4">
                 <Link v-for="link in users.links" :key="link.label" v-html="link.label" v-bind="link.url ? { href: link.url } : {}"
@@ -94,6 +88,7 @@
 </template>
 
 <script setup>
+    import { Modal } from 'bootstrap';
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
     import { Link, router,usePage } from '@inertiajs/vue3';
     import dayjs from 'dayjs';
@@ -104,10 +99,7 @@
     import { computed } from 'vue';
     import filterUsers from '@/Pages/filters/filterUsers.vue';
 
-    const showModal = ref(false);
-    const show_restore_modal_user = ref(false);
-    const show_final_deleted_modal_user = ref(false);
-    const showFilters = ref(false);
+    const showUserFilters = ref(false);
 
     const userToDelete = ref(null);
     const userToRestore = ref(null);
@@ -118,7 +110,10 @@
     const error = computed(() => page.props.errors.unauthorizedAction);
 
     const props = defineProps({
-        users:Object,
+        users:{
+            type: Object,
+            required:true
+        },
         successMessage: {
             type: String,
             default: ''
@@ -126,33 +121,46 @@
     });
 
     function openDeleteModal(user){
-        userToDelete.value = user;
-        showModal.value = true;
+        userToDelete.value = user
+        const delete_user_modal = document.getElementById('deleteUserModal')
+        const modal = new Modal(delete_user_modal)
+        modal.show()
     }
 
     function deleteUser(user){
+        const user_modal = document.getElementById('deleteUserModal');
+        const user_modal_instance = Modal.getInstance(user_modal) || new Modal(user_modal);
+        user_modal_instance.hide();
+
         router.delete(`/users/${user.id}`)
-        showModal.value = false;
     }
 
     function openModalRestoreUser(user){
         userToRestore.value = user;
-        show_restore_modal_user.value = true;
+        const restore_user_modal = document.getElementById('restoreUserModal');
+        const modal = new Modal(restore_user_modal);
+        modal.show();
     }
 
     function openModalFinalDeleteUser(user){
         userToFinalDelete.value = user;
-        show_final_deleted_modal_user.value = true;
+        const final_delete_user_modal = document.getElementById('finalDeleteUserModal')
+        const modal = new Modal(final_delete_user_modal);
+        modal.show();
     }
 
     function restoreUser(user){
         router.get(`/user/${user.id}/restore`)
-        show_restore_modal_user.value = true;
+        const restore_user_modal = document.getElementById('restoreUserModal');
+        const restore_user_modal_instance = Modal.getInstance(restore_user_modal) || new Modal(restore_user_modal);
+        restore_user_modal_instance.hide();
     }
 
     function finalDeleteUser(user){
-        router.get(`/user/${user.id}/final_deleted`)
-        show_final_deleted_modal_user.value = true;
+        const final_delete_user_modal = document.getElementById('finalDeleteUserModal');
+        const final_delete_user_modal_instance = Modal.getInstance(final_delete_user_modal) || new Modal(final_delete_user_modal);
+        final_delete_user_modal_instance.hide();
+        router.get(`/user/${user.id}/final_deleted`);
     }
 
     function searchFilterUser(filters){
@@ -165,7 +173,7 @@
 
     function resetFilterUser(){
         router.get(`/users`,{},{
-               onFinish: () => showFilters.value = false
+            onFinish: () => showFilters.value = false
         });
     }
 </script>

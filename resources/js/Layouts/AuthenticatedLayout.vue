@@ -37,6 +37,7 @@ const userId = window.userId || null;
                             <Link :href="route('users.index')">Users</Link>
                             <Link :href="route('courses.index')">Courses</Link>
                             <Link :href="route('courses.my-course')">My Courses</Link>
+                            <Link :href="route('announcements.index')">Announcements</Link>
                         </div>
                     </div>
 

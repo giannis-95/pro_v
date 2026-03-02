@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Filters\CourseFilter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class CourseController extends Controller
 {
@@ -81,6 +82,15 @@ class CourseController extends Controller
     public function course_registration($id){
         $user = User::find(Auth::user()->id);
         $course = Course::findOrFail($id);
+
+        // sms Μυνηματα
+        // Http::withToken(config('services.sinch.token'))->post('https://us.sms.api.sinch.com/xms/v1/' . config('services.sinch.service_plan_id') . '/batches',[
+        //         'from' => config('services.sinch.sender'),
+        //         'to' => ['+306978460325'],
+        //         'body' => 'Η εγγραφή σας στο μάθημα "' . $course->title . '" ολοκληρώθηκε με επιτυχία!'
+        //     ]
+        // );
+
 
         // $message = [
         //     'title' => 'Εγγραφή Μαθήματος : ' . $course->title,
