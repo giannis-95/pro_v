@@ -84,10 +84,10 @@
 
 <script setup>
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-    import { Link } from '@inertiajs/vue3';
+    import { Link,router } from '@inertiajs/vue3';
     import dayjs from 'dayjs';
     import filterUsers from '@/Pages/filters/filterUsers.vue';
-    import { ref , router } from 'vue';
+    import { ref } from 'vue';
 
     defineProps({
         user_histories:Object,
