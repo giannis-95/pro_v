@@ -1,5 +1,5 @@
 <template>
-    <div class="card">
+    <div class="card mb-4">
         <div class="row">
             <div class="col mt-3 mb-3">
                 <div class="container mt-4">
@@ -43,6 +43,7 @@
                             </div>
                         </div>
                     </div>
+                    <slot name="statusUser" :filters="filters"></slot>
                     <div class="row mt-4">
                         <div class="col-6">
                             <button @click="searchFilterUser" class="btn btn-primary">Αναζήτηση</button>
@@ -66,6 +67,7 @@
         name:'',
         role:'',
         date_to:'',
+        status: '',
         date_from:''
     });
 
@@ -78,6 +80,7 @@
         filters.role = '';
         filters.date_from = '';
         filters.date_to = '';
+        filters.status = '';
         emit('reset');
     }
 </script>

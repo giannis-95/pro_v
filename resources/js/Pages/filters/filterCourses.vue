@@ -1,7 +1,7 @@
 <template>
-    <div class="row">
-        <div class="col">
-            <div class="card">
+    <div class="card mb-4">
+        <div class="row">
+            <div class="col">
                 <div class="container mt-4">
                     <div class="row">
                         <div class="col">

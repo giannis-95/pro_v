@@ -2,30 +2,37 @@
     <AuthenticatedLayout>
         <div>
             <div class="container">
+                 <div v-if="liveCourses.length" class="mb-3">
+        <h5>Νέα Μαθήματα σε πραγματικό χρόνο:</h5>
+        <ul>
+            <li v-for="course in liveCourses" :key="course.id">
+                {{ course.title }} - {{ course.created_at }}
+            </li>
+        </ul>
+    </div>
                 <div v-if="successMessage" class="alert alert-success">
                     {{ successMessage }}
                 </div>
-                <div class="row">
-                    <div class="col">
-                         <div class="btn btn-primary" @click="showCourseFilters =! showCourseFilters">
-                            {{ showCourseFilters ? 'κλείσιμο φίλτρων' : 'Φίλτρα' }}
-                        </div>
-                    </div>
-                </div>
-                <filterCourses v-if="showCourseFilters" @search="filterSearch" @reset="filterReset"></filterCourses>
                 <div class="row mt-4 mb-4">
-                    <div class="col-12">
-                        <Link :href="route('courses.create')" class="btn btn-primary">Δημιουργία Μαθηματος</Link>
+                    <div class="col">
+                         <button class="btn btn-primary" @click="showCourseFilters =! showCourseFilters">
+                            {{ showCourseFilters ? 'κλείσιμο φίλτρων' : 'Φίλτρα' }}
+                        </button>
+                        <filterCourses v-if="showCourseFilters" @search="filterSearch" @reset="filterReset"></filterCourses>
+                        <Link v-if="user_role == 'Διαχειριστής'" :href="route('courses.create')" class="btn btn-primary ml-2">Δημιουργία Μαθηματος</Link>
+                        <Link v-if="user_role == 'Διαχειριστής'" :href="route('course-histories.index')" class="btn btn-primary ml-2">Ιστορικό μαθημάτων</Link>
+                        <Link class="btn btn-secondary ml-2">Εκτύπωση Excel</Link>
+                        <Link class="btn btn-danger ml-2">Εκτύπωση Pdf</Link>
                     </div>
                 </div>
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Title</th>
-                            <th>Image</th>
-                            <th>Created at</th>
-                            <th>Actions</th>
+                            <th>Τίτλος</th>
+                            <th>Εικόνα</th>
+                            <th>Ημερομηνια Δημιουργίας</th>
+                            <th>Ενέργειες</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -93,7 +100,7 @@
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
     import { Link, router } from '@inertiajs/vue3';
     import dayjs from 'dayjs';
-    import { ref } from 'vue';
+    import { ref , onMounted  } from 'vue';
     import DeleteCourse from '@/Pages/courses/delete.vue';
     import RestoreCourse from '@/Pages/courses/restore.vue';
     import FinalDeletedCourse from '@/Pages/courses/final-deleted.vue';
@@ -107,6 +114,10 @@
         successMessage:{
             type:String,
             default:''
+        },
+        user_role: {
+            type: String,
+            required: true
         }
     });
 
@@ -114,6 +125,18 @@
     const deleteCourse = ref(null);
     const restore_course = ref(null);
     const final_deleted_course = ref(null);
+    const liveCourses = ref([]);
+
+    onMounted(() => {
+        window.Echo.private('courses')
+            .listen('CourseCreated', (event) => {
+                // Προσθήκη στο liveCourses
+                liveCourses.value.push(event);
+
+                // Προαιρετικά: εμφάνιση alert ή toast
+                alert(`Νέο course: ${event.title}`);
+            });
+    });
 
     function openModalCourse(course){
         deleteCourse.value = course;

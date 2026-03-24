@@ -12,19 +12,19 @@
                 </div>
                 <hr>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Title</label>
+                    <label class="col-sm-2 col-form-label">Τίτλος</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" :value="course.title" disabled>
                     </div>
                 </div>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Image</label>
+                    <label class="col-sm-2 col-form-label">Εικόνα</label>
                     <div class="col-sm-10">
                         <img v-if="course.image" :src="`/storage/${course?.image}`" height="200px" width="200px">
                     </div>
                 </div>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Description</label>
+                    <label class="col-sm-2 col-form-label">Περιγραφή</label>
                     <div class="col-sm-10">
                        <textarea class="form-control" rows="4" :value="course.description" disabled></textarea>
                     </div>

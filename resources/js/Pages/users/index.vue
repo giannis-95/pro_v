@@ -7,17 +7,16 @@
             <div v-if="$page.props.errors.unauthorizedAction" class="alert alert-danger">
                 {{ $page.props.errors.unauthorizedAction }}
             </div>
-            <div class="row mt-3 mb-3">
+            <div class="row mt-4 mb-4">
                 <div class="col">
                     <button class="btn btn-primary" @click="showUserFilters =! showUserFilters">
                         {{ showUserFilters ? 'Κλείσιμο Φίλτρων' : 'Φίλτρα' }}
                     </button>
-                </div>
-            </div>
-            <filterUsers v-if="showUserFilters" @search="searchFilterUser" @reset="resetFilterUser"></filterUsers>
-            <div class="row">
-                <div class="col mt-3 mb-3">
-                    <Link :href="route('users.create')" class="btn btn-primary">Δημιουργία Χρήστη</Link>
+                    <filterUsers v-if="showUserFilters" @search="searchFilterUser" @reset="resetFilterUser"></filterUsers>
+                    <Link v-if="user_role == 'Διαχειριστής'" :href="route('users.create')" class="btn btn-primary ml-2">Δημιουργία Χρήστη</Link>
+                    <Link v-if="user_role == 'Διαχειριστής'" :href="route('user-histories.index')" class="btn btn-primary ml-2">Ιστορικό Χρηστών</Link>
+                    <Link class="btn btn-secondary ml-2">Εκτύπωση Excel</Link>
+                    <Link class="btn btn-danger ml-2">Εκτύπωση Pdf</Link>
                 </div>
             </div>
             <table class="table table-striped">
@@ -118,6 +117,10 @@
             type: String,
             default: ''
         },
+        user_role:{
+            type: String,
+            required:true
+        }
     });
 
     function openDeleteModal(user){

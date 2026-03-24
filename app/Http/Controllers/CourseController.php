@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Filters\CourseFilter;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+// use App\Events\CourseCreated;
 
 class CourseController extends Controller
 {
@@ -24,6 +24,7 @@ class CourseController extends Controller
         $filter_course = new CourseFilter($request);
 
         $user = Auth::user();
+        $user_role = User::find($user->id)->getRoleNames()->first();
 
         $courses = $filter_course->filterCourses(Course::withTrashed())
                     ->paginate(10)
@@ -35,6 +36,7 @@ class CourseController extends Controller
 
         return Inertia::render('courses/index',[
             'courses' => $courses,
+            'user_role' => $user_role
         ]);
     }
 
@@ -66,6 +68,9 @@ class CourseController extends Controller
         }
 
         Course::create($data);
+
+        // $course = Course::create($data);
+        // broadcast(new CourseCreated($course));
 
         return redirect()->route('courses.index')->withSuccess('Το Μάθημα δημιουργήθηκε με επιτυχία.');
     }

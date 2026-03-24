@@ -87,6 +87,5 @@
         }),
             update_announcement
         );
-
     }
 </script>

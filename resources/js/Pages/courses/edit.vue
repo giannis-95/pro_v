@@ -14,25 +14,25 @@
                 </div>
                 <hr>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Title</label>
+                    <label class="col-sm-2 col-form-label">Τίτλος</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" name="title" v-model="edit_course.title">
                     </div>
                 </div>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Image</label>
+                    <label class="col-sm-2 col-form-label">Εικόνα</label>
                     <div class="col-sm-10">
                         <img v-if="edit_course.image && typeof edit_course.image === 'string'" :src="`/storage/${edit_course.image}`" height="200px" width="200px">
                     </div>
                 </div>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Upload Image</label>
+                    <label class="col-sm-2 col-form-label">Ανέβασμα Φωτογραφίας</label>
                     <div class="col-sm-10">
                         <input type="file" class="form-control" name="image" @change="handleImageUpload">
                     </div>
                 </div>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Description</label>
+                    <label class="col-sm-2 col-form-label">Περιγραφή</label>
                     <div class="col-sm-10">
                        <textarea class="form-control" rows="4" name="description" v-model="edit_course.description"></textarea>
                     </div>

@@ -10,7 +10,10 @@
                         {{ show_announcement_filters ? 'Κλείσιμο Φίλτρων' : 'Φίλτρα' }}
                     </button>
                     <FilterAnnouncements v-if="show_announcement_filters" @search="searchFilters" @reset="resetFilters" :courses="courses" :users="users"></FilterAnnouncements>
-                    <Link :href="route('announcements.create')" class="btn btn-primary ml-2">Δημιουργία Ανακοίνωσης</Link>
+                    <Link v-if="user_role === 'Διαχειριστής'" :href="route('announcements.create')" class="btn btn-primary ml-2">Δημιουργία Ανακοίνωσης</Link>
+                    <Link v-if="user_role === 'Διαχειριστής'" :href="route('announcement-histories.index')" class="btn btn-primary ml-2">Ιστορικό Ανακοινώσεων</Link>
+                    <Link class="btn btn-secondary ml-2">Εκτύπωση Excel</Link>
+                    <Link class="btn btn-danger ml-2">Εκτύπωση Pdf</Link>
                 </div>
             </div>
             <div style="margin-top: 20px;">
@@ -87,6 +90,10 @@
         },
         users:{
             type: Object,
+            required:true
+        },
+        user_role:{
+            type: String,
             required:true
         },
         successMessage:{

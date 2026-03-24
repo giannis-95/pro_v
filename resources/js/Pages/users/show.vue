@@ -6,8 +6,13 @@
                     <h3>Προβολή Χρήστη</h3>
                 </div>
                 <hr>
+                <div class="row text-end mt-4 mb-4">
+                    <div class="col">
+                        <Link :href="route('users.index')" class="btn btn-primary">Επιστροφή</Link>
+                    </div>
+                </div>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Name</label>
+                    <label class="col-sm-2 col-form-label">Όνομα</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" :value="user.name" disabled>
                     </div>
@@ -24,11 +29,6 @@
                         <input type="text" class="form-control" :value="user.role" disabled>
                     </div>
                 </div>
-                <div class="row mt-4">
-                    <div class="col">
-                        <Link :href="route('users.index')" class="btn btn-primary">Επιστροφή</Link>
-                    </div>
-                </div>
             </div>
         </AuthenticatedLayout>
     </div>
@@ -38,7 +38,7 @@
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
     import { Link } from '@inertiajs/vue3';
 
-    const props = defineProps({
+    defineProps({
         user: Object
     });
 </script>

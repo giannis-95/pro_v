@@ -15,7 +15,7 @@
                         </ul>
                     </div>
                     <div class="form-group row mb-3">
-                        <label class="col-sm-2 col-form-label">Name</label>
+                        <label class="col-sm-2 col-form-label">Όνομα</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="name" v-model="edit_user.name">
                         </div>
@@ -27,13 +27,13 @@
                         </div>
                     </div>
                     <div class="form-group row mb-3">
-                        <label class="col-sm-2 col-form-label">Password</label>
+                        <label class="col-sm-2 col-form-label">Κωδικός πρόσβασης</label>
                         <div class="col-sm-10">
                             <input type="password" class="form-control" name="password" v-model="edit_user.password">
                         </div>
                     </div>
                     <div class="form-group row mb-3">
-                        <label class="col-sm-2 col-form-label">Confirm Password</label>
+                        <label class="col-sm-2 col-form-label">Επιβεβαίωση κωδικού πρόσβασης</label>
                         <div class="col-sm-10">
                             <input type="password" class="form-control" v-model="edit_user.password_confirmation">
                         </div>

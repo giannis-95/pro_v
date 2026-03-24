@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CourseController;
 
-Route::resources(['courses' => CourseController::class,]);
+Route::resource('courses', CourseController::class);
 
 Route::get('/course/{id}/registration',                   [CourseController::class,'course_registration'])->name('course.registration');
 Route::get('/course/{id}/unregistration_course_email',    [CourseController::class,'unregistration_course_email'])->name('course.unregistration_course_email');

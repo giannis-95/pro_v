@@ -17,9 +17,9 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Title</th>
-                            <th>Image</th>
-                            <th>Created at</th>
+                            <th>Τίτλος</th>
+                            <th>Εικόνα</th>
+                            <th>Ημερομηνία δημιουργίας</th>
                         </tr>
                     </thead>
                     <tbody>

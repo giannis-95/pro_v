@@ -16,8 +16,8 @@
                     <label class="col-sm-2 col-form-label">Μάθημα:</label>
                     <div class="col-sm-10">
                         <select class="form-control" name="course_id" v-model="create_announcement.course_id" required>
-                            <option>Επιλέξτε μάθημα...</option>
-                            <option v-for="course in courses" :key="course.id" :value="course.id">
+                            <option value="">Επιλέξτε μάθημα...</option>
+                            <option v-for="course in courses_user" :key="course.id" :value="course.id">
                                 {{ course.title }}
                             </option>
                         </select>
@@ -51,7 +51,7 @@
     import { Link, useForm } from '@inertiajs/vue3';
 
     defineProps({
-        courses:{
+        courses_user:{
             type:Object,
             required:true
         }

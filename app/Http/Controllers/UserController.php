@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\History\UserHistory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Filters\UserFilter;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -16,6 +19,8 @@ class UserController extends Controller
 
     public function index(Request $request){
         $userFilter = new UserFilter($request);
+
+        $user_role = User::find(Auth::user()->id)->getRoleNames()->first();
 
         $users = $userFilter->apply(User::withTrashed())
             ->orderBy('id')
@@ -28,6 +33,7 @@ class UserController extends Controller
 
         return Inertia::render('users/index', [
             'users' => $users,
+            'user_role' => $user_role
         ]);
     }
 
@@ -52,22 +58,25 @@ class UserController extends Controller
     }
 
     public function store(UserRequest $request){
-        $user_data = $request->only([
-            'name',
-            'email',
-            'password',
-            'role'
-        ]);
-
+        $user_data = $request->validated();
         $user_data['password'] = Hash::make($request->input('password'));
 
-        $user = User::create([
-            'name' => $user_data['name'],
-            'email' => $user_data['email'],
-            'password' => $user_data['password']
-        ]);
+        DB::transaction(function () use ($user_data){
+            $user = User::create([
+                'name' => $user_data['name'],
+                'email' => $user_data['email'],
+                'password' => $user_data['password']
+            ]);
 
-        $user->assignRole($user_data['role']);
+            $user->assignRole($user_data['role']);
+
+            UserHistory::create([
+                'name' => $user_data['name'],
+                'email' => $user_data['email'],
+                'role' => $user_data['role'],
+                'status' => 'Ενεργος'
+            ]);
+        });
 
         return redirect()->route('users.index')->withSuccess('Η Δημιουργία του χρήστη έγινε με επιτυχία.');
     }
@@ -95,7 +104,18 @@ class UserController extends Controller
     public function destroy(User $user){
         $this->authorize('delete', $user);
 
-        $user->delete();
+        $role = $user->getRoleNames()->first();
+
+        DB::transaction(function() use($user,$role){
+            UserHistory::create([
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $role,
+                'status' => 'Μη Ενεργός'
+            ]);
+
+            $user->delete();
+        });
 
         return redirect()->back()->withSuccess('Η Διαγραφή του χρήστη έγινε με επιτυχία.');
     }
@@ -105,7 +125,18 @@ class UserController extends Controller
 
         $this->authorize('restore', $user);
 
-        $user->restore();
+        $role = $user->getRoleNames()->first();
+
+        DB::transaction(function () use($user,$role){
+            UserHistory::create([
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $role,
+                'status' => 'Ενεργός'
+            ]);
+
+            $user->restore();
+        });
 
         return redirect()->back()->withSuccess('Η Επαναφορά του χρήστη έγινε με επιτυχία.');
     }
@@ -116,9 +147,18 @@ class UserController extends Controller
         $this->authorize('forceDelete', $user);
 
         $role = $user->getRoleNames()->first();
-        $user->removeRole($role);
 
-        $user->forceDelete();
+        DB::transaction(function () use ($user,$role){
+            UserHistory::create([
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $role,
+                'status' => 'Διεγεγραμένος'
+            ]);
+
+            $user->removeRole($role);
+            $user->forceDelete();
+        });
 
         return redirect()->back()->withSuccess('Η οριστική διαγραφή του χρήστη έγινε με επιτυχία.');
     }

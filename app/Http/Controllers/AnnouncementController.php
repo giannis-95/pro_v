@@ -25,11 +25,13 @@ class AnnouncementController extends Controller
 
         $courses = Course::withoutTrashed();
         $users = User::withoutTrashed()->role('Καθηγητής')->get();
+        $user_role = User::find(Auth::user()->id)->getRoleNames()->first();
 
         return Inertia::render('announcements/index',[
             'announcements' => $announcements,
             'courses' => $courses,
-            'users' => $users
+            'users' => $users,
+            'user_role' => $user_role
         ]);
     }
 
@@ -43,10 +45,10 @@ class AnnouncementController extends Controller
      */
     public function create()
     {
-        $courses = Course::all();
+        $courses_user = User::find(Auth::user()->id)->courses()->get();
 
         return Inertia::render('announcements/create',[
-            'courses' => $courses
+            'courses_user' => $courses_user
         ]);
     }
 

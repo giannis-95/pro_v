@@ -14,19 +14,19 @@
                 </div>
                 <hr>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Title</label>
+                    <label class="col-sm-2 col-form-label">Τίτλος</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" name="title" v-model="create_course.title" required>
                     </div>
                 </div>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Image</label>
+                    <label class="col-sm-2 col-form-label">Εικόνα</label>
                     <div class="col-sm-10">
                         <input type="file" class="form-control" @change="handleFileChange" name="image">
                     </div>
                 </div>
                 <div class="form-group row mb-3">
-                    <label class="col-sm-2 col-form-label">Description</label>
+                    <label class="col-sm-2 col-form-label">Περιγραφή</label>
                     <div class="col-sm-10">
                        <textarea class="form-control" rows="4" name="description" v-model="create_course.description"></textarea>
                     </div>
