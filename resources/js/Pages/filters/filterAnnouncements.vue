@@ -31,7 +31,7 @@
                                 <div class="col-9">
                                     <select class="form-control" v-model="announcement_filters.user">
                                         <option>Επιλέξτε Καθηγητή...</option>
-                                        <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
+                                        <option v-for="instructor_admin in instructor_admins" :key="instructor_admin.id" :value="instructor_admin.id">{{ instructor_admin.name }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -54,6 +54,7 @@
                             </div>
                         </div>
                     </div>
+                    <slot name="statusAnnouncement" :announcement_filters="announcement_filters"></slot>
                     <div class="row mt-4 mb-4">
                         <div class="col-6">
                             <button type="button" class="btn btn-primary" @click="searhFilter">Αναζήτηση</button>
@@ -76,10 +77,10 @@
             type: Object,
             required:true
         },
-        users:{
+        instructor_admins:{
             type: Object,
             required:true
-        }
+        },
     });
 
     const emit = defineEmits(['search','reset']);
@@ -89,7 +90,8 @@
         course: '',
         user: '',
         date_to: '',
-        date_from: ''
+        date_from: '',
+        status: ''
     });
 
     function resertFilter(){
@@ -97,7 +99,8 @@
         announcement_filters.course = '',
         announcement_filters.user = '',
         announcement_filters.date_from = '',
-        announcement_filters.date_to = ''
+        announcement_filters.date_to = '',
+        announcement_filters.status = ''
         emit('reset');
     }
 

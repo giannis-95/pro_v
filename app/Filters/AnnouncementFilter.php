@@ -12,11 +12,11 @@ class AnnouncementFilter{
     }
 
     public function filterAnnouncement(Builder $query){
-        $title = $this->request->title;
-        $course = $this->request->course;
-        $user = $this->request->user;
-        $date_form = $this->request->date_from;
-        $date_to = $this->request->date_to;
+        $title = $this->request->title ?? null;
+        $course = $this->request->course ?? null;
+        $user = $this->request->user ?? null;
+        $date_form = $this->request->date_from ?? null;
+        $date_to = $this->request->date_to ?? null;
 
         return $query->when($title,
                 fn($query) => $query->where('title', 'LIKE',"%$title%")

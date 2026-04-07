@@ -12,9 +12,9 @@ class CourseFilter{
     }
 
     public function filterCourses(Builder $query){
-        $title = $this->request->title;
-        $date_from = $this->request->date_from;
-        $date_to = $this->request->date_to;
+        $title = $this->request->title ?? null;
+        $date_from = $this->request->date_from ?? null;
+        $date_to = $this->request->date_to ?? null;
 
         return $query->when($title,
             fn($query) => $query->where('title','LIKE',"%$title%")

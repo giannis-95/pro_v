@@ -12,6 +12,8 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Filters\AnnouncementFilter;
+use App\Models\History\AnnouncementHistory;
+use Illuminate\Support\Facades\DB;
 
 class AnnouncementController extends Controller
 {
@@ -20,18 +22,21 @@ class AnnouncementController extends Controller
      */
     public function index(Request $request)
     {
+        $auth_user_id = Auth::user()->id;
         $announcement_filter = new AnnouncementFilter($request);
-        $announcements = $announcement_filter->filterAnnouncement(Announcement::with(['course', 'user']))->get();
+        $announcements = $announcement_filter->filterAnnouncement(Announcement::with(['course', 'user'])->orderBy('created_at','DESC'))->paginate(10);
 
         $courses = Course::withoutTrashed();
-        $users = User::withoutTrashed()->role('Καθηγητής')->get();
-        $user_role = User::find(Auth::user()->id)->getRoleNames()->first();
+        $instructor_admins = User::withoutTrashed()->role(['Καθηγητής','Διαχειριστής'])->get();
+
+        $user_role = User::find($auth_user_id)->getRoleNames()->first();
 
         return Inertia::render('announcements/index',[
             'announcements' => $announcements,
             'courses' => $courses,
-            'users' => $users,
-            'user_role' => $user_role
+            'instructor_admins' => $instructor_admins,
+            'user_role' => $user_role,
+            'auth_user_id' => $auth_user_id
         ]);
     }
 
@@ -58,22 +63,39 @@ class AnnouncementController extends Controller
     public function store(StoreAnnouncementRequest $request)
     {
         $data = $request->validated();
-        $user = Auth::user()->id;
+        $auth_user = Auth::user()->id;
         $path = null;
 
         $announcement = new Announcement();
-        $announcement->title = $data['title'];
-        $announcement->message = $data['message'] ?? null;
 
-        if($request->hasFile('file')){
-            $file = $request->file('file')->getClientOriginalName();
-            $path = $request->file('file')->storeAs('announcements', $file,'public');
-        }
+        DB::transaction(function () use($request,$data,$auth_user,$announcement) {
+            $user_name = User::find($auth_user)->name;
+            $course_title = Course::find($data['course_id'])->title;
 
-        $announcement->file = $path;
-        $announcement->user()->associate($user);
-        $announcement->course()->associate($data['course_id']);
-        $announcement->save();
+            // dd($user_name,$course_title);
+            $announcement->title = $data['title'];
+            $announcement->message = $data['message'] ?? null;
+
+            if($request->hasFile('file')){
+                $file = $request->file('file')->getClientOriginalName();
+                $path = $request->file('file')->storeAs('announcements', $file,'public');
+            }
+
+            $announcement->file = $path;
+
+            AnnouncementHistory::create([
+                'user' => $user_name,
+                'course' => $course_title,
+                'title' => $announcement->title,
+                'message' => $announcement->message,
+                'file' => $path,
+                'status' => 'Ενεργή'
+            ]);
+
+            $announcement->user()->associate($auth_user);
+            $announcement->course()->associate($data['course_id']);
+            $announcement->save();
+        });
 
         return redirect()->route('announcements.index')->withSuccess('Η Δημιουργία της ανακοίνωσης έγινε με επιτυχία');
     }
@@ -132,7 +154,25 @@ class AnnouncementController extends Controller
      */
     public function destroy(Announcement $announcement)
     {
-        $announcement->delete();
+        DB::transaction(function () use($announcement){
+            $user = $announcement->user()->get();
+            $coure = $announcement->course()->get();
+
+            dd($user->name,$coure->title);
+
+            AnnouncementHistory::create([
+                'user' => $user->name,
+                'course' => $coure->title,
+                'title' => $announcement->title,
+                'message' => $announcement->message,
+                'file' => $announcement->file,
+                'status' => 'Διαγραμμένη'
+            ]);
+
+            $announcement->delete();
+        });
+
+
         return redirect()->route('announcements.index')->withSuccess('Η Διαγραφή της ανακοίνωσης έγινε με επιτυχία.');
     }
 }

@@ -2,14 +2,15 @@
     <AuthenticatedLayout>
         <div>
             <div class="container">
-                 <div v-if="liveCourses.length" class="mb-3">
-        <h5>Νέα Μαθήματα σε πραγματικό χρόνο:</h5>
-        <ul>
-            <li v-for="course in liveCourses" :key="course.id">
-                {{ course.title }} - {{ course.created_at }}
-            </li>
-        </ul>
-    </div>
+                 <!-- <div v-if="liveCourses.length" class="mb-3">
+                    <h5>Νέα Μαθήματα σε πραγματικό χρόνο:</h5>
+                    <ul>
+                        <li v-for="course in liveCourses" :key="course.id">
+                            {{ course.title }} - {{ course.created_at }}
+                        </li>
+                    </ul>
+                </div> -->
+
                 <div v-if="successMessage" class="alert alert-success">
                     {{ successMessage }}
                 </div>
@@ -45,7 +46,7 @@
                             </td>
                             <td>{{ course.title }}</td>
                             <td>
-                                <img v-if="course.image" :src="`/storage/${course?.image}`" height="70" width="70" />
+                                <img v-if="course.image" :src="`/storage/${course?.image}`" height="80" width="80" />
                             </td>
                             <td>{{ dayjs(course.created_at).format("DD-MM-YYYY HH:mm:ss") }}</td>
                             <td>
@@ -127,16 +128,16 @@
     const final_deleted_course = ref(null);
     const liveCourses = ref([]);
 
-    onMounted(() => {
-        window.Echo.private('courses')
-            .listen('CourseCreated', (event) => {
-                // Προσθήκη στο liveCourses
-                liveCourses.value.push(event);
+    // onMounted(() => {
+    //     window.Echo.private('courses')
+    //         .listen('CourseCreated', (event) => {
+    //             // Προσθήκη στο liveCourses
+    //             liveCourses.value.push(event);
 
-                // Προαιρετικά: εμφάνιση alert ή toast
-                alert(`Νέο course: ${event.title}`);
-            });
-    });
+    //             // Προαιρετικά: εμφάνιση alert ή toast
+    //             alert(`Νέο course: ${event.title}`);
+    //         });
+    // });
 
     function openModalCourse(course){
         deleteCourse.value = course;

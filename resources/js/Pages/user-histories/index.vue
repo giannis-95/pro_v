@@ -22,7 +22,7 @@
                                     <div class="row">
                                         <label class="col-3 col-form-label">Κατάσταση Χρήστη:</label>
                                         <div class="col-9">
-                                            <select class="form-control" v-model="filters.role">
+                                            <select class="form-control" v-model="filters.status">
                                                 <option value="">Επιλεξτε Κατάσταση...</option>
                                                 <option value="Ενεργός">Ενεργός</option>
                                                 <option value="Μη Ενεργός">Μη Ενεργός</option>
@@ -52,7 +52,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="user_history in user_histories">
+                    <tr v-for="user_history in user_histories.data" :key="user_history.id">
                         <td>{{ user_history.id }}</td>
                         <td>{{ user_history.name }}</td>
                         <td>{{ user_history.email }}</td>
@@ -74,10 +74,19 @@
                         </td>
                     </tr>
                     <tr v-if="user_histories?.lenght === 0">
-                        <td colspan="5" style="text-align: center;">Δεν υπάρχει Ιστορικό χρήστών</td>
+                        <td colspan="5" style="text-align: center;">Δεν υπάρχει Ιστορικό χρηστών</td>
                     </tr>
                 </tbody>
             </table>
+            <div class="mt-4">
+                <Link v-for="link in user_histories.links" :key="link.label" v-html="link.label" v-bind="link.url ? { href: link.url } : {}"
+                    :class="[
+                        'btn me-2',
+                        link.active ? 'btn-primary fw-bold' : 'btn-light',
+                        !link.url && 'disabled'
+                    ]"
+                />
+            </div>
         </div>
     </AuthenticatedLayout>
 </template>
@@ -91,13 +100,16 @@
 
     defineProps({
         user_histories:Object,
-        require:true
+        required:true
     });
 
     const user_history_filter = ref(false);
+    const showFilters = ref(null);
 
     function searchFilterUserHistory(filters){
-        router.get(`/user-histories`,{filters},{
+        router.get(`/user-histories`,filters,{
+            preserveState: true,
+            replace: true,
             onFinish: () => showFilters.value = false
         });
     }

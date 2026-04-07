@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Filters\CourseFilter;
+use App\Models\History\CourseHistory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 // use App\Events\CourseCreated;
 
@@ -67,9 +69,17 @@ class CourseController extends Controller
             $data['image'] = $request->file('image')->store('courses','public');
         }
 
-        Course::create($data);
+        DB::transaction(function () use ($data){
+            Course::create($data);
 
-        // $course = Course::create($data);
+            CourseHistory::create([
+                'title' => $data['title'],
+                'image' => $data['image'],
+                'description' => $data['description'],
+                'status' => 'Ενεργό'
+            ]);
+        });
+
         // broadcast(new CourseCreated($course));
 
         return redirect()->route('courses.index')->withSuccess('Το Μάθημα δημιουργήθηκε με επιτυχία.');
@@ -146,7 +156,16 @@ class CourseController extends Controller
 
         $this->authorize('restore',$course);
 
-        $course->restore();
+        DB::transaction(function () use ($course){
+            CourseHistory::create([
+                'title' => $course->title,
+                'image' => $course->image,
+                'description' => $course->description,
+                'status' => 'Ενεργό'
+            ]);
+
+           $course->restore();
+        });
 
         return redirect()->route('courses.index')->withSuccess('Η Επαναφορά του μαθήματος έγινε με επιτυχία.');
     }
@@ -184,11 +203,17 @@ class CourseController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Course $course){
-        if($course->image){
-            Storage::disk('public')->delete($course->image);
-        }
+        DB::transaction(function () use ($course){
+            CourseHistory::create([
+                'title' => $course->title,
+                'image' => $course->image,
+                'description' => $course->description,
+                'status' => 'Μη Ενεργό'
+            ]);
 
-        $course->delete();
+            $course->delete();
+        });
+
         return redirect()->back()->withSuccess('Η Διαγραφή του μαθήματος έγινε με επιτυχία.');
     }
 
@@ -197,7 +222,20 @@ class CourseController extends Controller
 
         $this->authorize('forceDelete',$course);
 
-        $course->forceDelete();
+        if($course->image){
+            Storage::disk('public')->delete($course->image);
+        }
+
+        DB::transaction(function () use ($course){
+            CourseHistory::create([
+                'title' => $course->title,
+                'image' => null,
+                'description' => $course->description,
+                'status' => 'Διεγεγραμένο'
+            ]);
+
+            $course->forceDelete();
+        });
 
         return redirect()->route('courses.index')->withSuccess('Η Οριστική Διαγραφή του μαθήματος έγινε με επιτυχία.');
     }

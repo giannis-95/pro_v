@@ -2,10 +2,10 @@
 import { ref, onMounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
 
-// const notifications = ref([]);
-// const open = ref(false);
-// const showingNavigationDropdown = ref(false);
-// const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+const open = ref(false);
+const showingNavigationDropdown = ref(false);
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+const notifications = ref([]);
 
 // const userId = window.userId || null;
 // onMounted(() => {
@@ -62,7 +62,7 @@ import { Link } from '@inertiajs/vue3';
                         </div>
 
                         <!-- Notification Icon -->
-                        <!-- <div class="dropdown">
+                        <div class="dropdown">
                             <button type="button" class="btn btn-primary" id="dropdownNotification" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-left: 20px;">
                                 🔔
                                 <span v-if="notifications.length" class="badge bg-danger">{{ notifications.length }}</span>
@@ -75,7 +75,7 @@ import { Link } from '@inertiajs/vue3';
                                 </div>
                                 <div v-else class="dropdown-item text-muted">Δεν υπάρχουν νέες ειδοποιήσεις</div>
                             </div>
-                        </div> -->
+                        </div>
                     </div>
 
                     <!-- Hamburger -->
@@ -88,7 +88,6 @@ import { Link } from '@inertiajs/vue3';
                             </svg>
                         </button>
                     </div>
-
                 </div>
             </div>
         </nav>

@@ -17,7 +17,7 @@ class UserHistoryController extends Controller
     {
         $user_history_class = new UserHistoryFilter($request);
 
-        $user_histories = $user_history_class->filterUserHistory(UserHistory::query())->get();
+        $user_histories = $user_history_class->filterUserHistory(UserHistory::query())->paginate(10)->withQueryString();
 
         return inertia::render('user-histories/index',[
             'user_histories' => $user_histories

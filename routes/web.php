@@ -18,7 +18,7 @@ Route::middleware('auth')->group(function(){
     require __DIR__ . '/caledar.php';
     require __DIR__ . '/histories/users.php';
     require __DIR__ . '/histories/courses.php';
-    require __DIR__ . '/histories/announcements.php';
+    require __DIR__ . '/histories/announcement-histories.php';
 
     //Notifications
     Route::get('notifications',                                 [NotificationController::class, 'index'])->name('notifications.index');

@@ -9,6 +9,7 @@ class CourseHistory extends Model
     protected $fillable = [
         'title',
         'image',
-        'description'
+        'description',
+        'status'
     ];
 }

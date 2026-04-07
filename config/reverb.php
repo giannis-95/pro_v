@@ -12,7 +12,7 @@ return [
     | connected clients. At this time only "reverb" is supported.
     |
     */
-    'allowed_origins' => ['http://127.0.0.1:8000'],
+
     'default' => env('REVERB_SERVER', 'reverb'),
 
     /*

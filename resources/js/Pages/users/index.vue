@@ -15,8 +15,8 @@
                     <filterUsers v-if="showUserFilters" @search="searchFilterUser" @reset="resetFilterUser"></filterUsers>
                     <Link v-if="user_role == 'Διαχειριστής'" :href="route('users.create')" class="btn btn-primary ml-2">Δημιουργία Χρήστη</Link>
                     <Link v-if="user_role == 'Διαχειριστής'" :href="route('user-histories.index')" class="btn btn-primary ml-2">Ιστορικό Χρηστών</Link>
-                    <Link class="btn btn-secondary ml-2">Εκτύπωση Excel</Link>
-                    <Link class="btn btn-danger ml-2">Εκτύπωση Pdf</Link>
+                    <button class="btn btn-secondary ml-2" @click="exportExcel">Εκτύπωση Excel</button>
+                    <button class="btn btn-danger ml-2" @click="exportPdf">Εκτύπωση Pdf</button>
                 </div>
             </div>
             <table class="table table-striped">
@@ -178,5 +178,13 @@
         router.get(`/users`,{},{
             onFinish: () => showFilters.value = false
         });
+    }
+
+    function exportExcel() {
+       window.open('/users/export-excel', '_blank');
+    }
+
+    function exportPdf() {
+        window.open('/users/export-pdf', '_blank');
     }
 </script>

@@ -12,12 +12,11 @@ class UserHistoryFilter{
     }
 
     public function filterUserHistory(Builder $query){
-
-        $name = $this->request->name;
-        $role = $this->request->role;
-        $date_to = $this->request->date_to;
-        $date_from = $this->request->date_from;
-        $status = $this->request->status;
+        $name = $this->request->name ?? null;
+        $role = $this->request->role ?? null;
+        $date_to = $this->request->date_to ?? null;
+        $date_from = $this->request->date_from ?? null;
+        $status = $this->request->status ?? null;
 
         return $query->when($name,
             fn($query) => $query->where('name' , 'LIKE' , "%$name%")

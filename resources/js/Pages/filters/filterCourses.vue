@@ -30,6 +30,7 @@
                             </div>
                         </div>
                     </div>
+                    <slot name="courseStatus" :filters="filters"></slot>
                     <div class="row mt-4 mb-4">
                         <div class="col-6">
                             <button @click="filterSearch" class="btn btn-primary">Αναζήτηση</button>
@@ -52,7 +53,8 @@
     const filters = reactive({
         title:'',
         date_to:'',
-        date_from:''
+        date_from:'',
+        status:''
     });
 
     function filterSearch(){
@@ -63,6 +65,7 @@
         filters.title = '';
         filters.date_from = '';
         filters.date_to = '';
+        filters.status = '';
         emit('reset')
     }
 </script>

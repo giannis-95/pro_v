@@ -13,10 +13,10 @@ class UserFilter{
     }
 
     public function apply(Builder $query){
-        $name = $this->request->name;
-        $role = $this->request->role;
-        $date_from = $this->request->date_from;
-        $date_to = $this->request->date_to;
+        $name = $this->request->name ?? null;
+        $role = $this->request->role ?? null;
+        $date_from = $this->request->date_from ?? null;
+        $date_to = $this->request->date_to ?? null;
 
         return $query->when($name,
                 fn($query) => $query->where('name' ,'like' ,"%$name%")

@@ -12,6 +12,9 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Filters\UserFilter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Exports\UsersExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
@@ -35,6 +38,20 @@ class UserController extends Controller
             'users' => $users,
             'user_role' => $user_role
         ]);
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new UsersExport, 'users.xlsx');
+    }
+
+    public function exportPdf()
+    {
+        $users = User::all();
+
+        $pdf = Pdf::loadView('pdf.users', compact('users'));
+
+        return $pdf->download('users.pdf');
     }
 
     public function show(User $user){
