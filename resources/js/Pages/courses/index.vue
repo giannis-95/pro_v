@@ -2,15 +2,6 @@
     <AuthenticatedLayout>
         <div>
             <div class="container">
-                 <!-- <div v-if="liveCourses.length" class="mb-3">
-                    <h5>Νέα Μαθήματα σε πραγματικό χρόνο:</h5>
-                    <ul>
-                        <li v-for="course in liveCourses" :key="course.id">
-                            {{ course.title }} - {{ course.created_at }}
-                        </li>
-                    </ul>
-                </div> -->
-
                 <div v-if="successMessage" class="alert alert-success">
                     {{ successMessage }}
                 </div>
@@ -22,8 +13,8 @@
                         <filterCourses v-if="showCourseFilters" @search="filterSearch" @reset="filterReset"></filterCourses>
                         <Link v-if="user_role == 'Διαχειριστής'" :href="route('courses.create')" class="btn btn-primary ml-2">Δημιουργία Μαθηματος</Link>
                         <Link v-if="user_role == 'Διαχειριστής'" :href="route('course-histories.index')" class="btn btn-primary ml-2">Ιστορικό μαθημάτων</Link>
-                        <Link class="btn btn-secondary ml-2">Εκτύπωση Excel</Link>
-                        <Link class="btn btn-danger ml-2">Εκτύπωση Pdf</Link>
+                        <Link class="btn btn-secondary ml-2" @click="exportExcel">Εκτύπωση Excel</Link>
+                        <Link class="btn btn-danger ml-2" @click="exportPdf">Εκτύπωση Pdf</Link>
                     </div>
                 </div>
                 <table class="table table-striped">
@@ -101,7 +92,7 @@
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
     import { Link, router } from '@inertiajs/vue3';
     import dayjs from 'dayjs';
-    import { ref , onMounted  } from 'vue';
+    import { ref } from 'vue';
     import DeleteCourse from '@/Pages/courses/delete.vue';
     import RestoreCourse from '@/Pages/courses/restore.vue';
     import FinalDeletedCourse from '@/Pages/courses/final-deleted.vue';
@@ -126,18 +117,6 @@
     const deleteCourse = ref(null);
     const restore_course = ref(null);
     const final_deleted_course = ref(null);
-    const liveCourses = ref([]);
-
-    // onMounted(() => {
-    //     window.Echo.private('courses')
-    //         .listen('CourseCreated', (event) => {
-    //             // Προσθήκη στο liveCourses
-    //             liveCourses.value.push(event);
-
-    //             // Προαιρετικά: εμφάνιση alert ή toast
-    //             alert(`Νέο course: ${event.title}`);
-    //         });
-    // });
 
     function openModalCourse(course){
         deleteCourse.value = course;
@@ -190,5 +169,13 @@
 
     function filterReset(){
         router.get(`/courses`,{});
+    }
+
+    function exportExcel(){
+        window.open('/course/export-excel','_blank');
+    }
+
+    function exportPdf(){
+        window.open('/course/export-pdf','_blank');
     }
 </script>

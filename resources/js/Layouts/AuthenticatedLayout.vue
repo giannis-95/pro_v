@@ -1,19 +1,28 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
-
+import { Link , usePage } from '@inertiajs/vue3';
 const open = ref(false);
 const showingNavigationDropdown = ref(false);
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-const notifications = ref([]);
 
-// const userId = window.userId || null;
-// onMounted(() => {
-//     window.Echo.private('courses')
-//         .listen('CourseCreated', (event) => {
-//             notifications.value.push(event);
-//         });
-// });
+const notifications = ref([]);
+const userId = usePage().props.auth.user.id;
+
+onMounted(async () => {
+    const res = await axios.get('/notifications/send');
+    notifications.value = res.data;
+    window.Echo.private(`App.Models.User.${userId}`).notification((notification) => {
+        notifications.value.unshift(notification);
+    });
+});
+
+const markAsRead = async (notification) => {
+    await axios.post(`/notifications/${notification.id}/read`);
+
+    notifications.value = notifications.value.filter(
+        notification_user => notification_user.id !== notification.id
+    );
+};
 </script>
 
 <template>
@@ -31,7 +40,8 @@ const notifications = ref([]);
                             <Link :href="route('courses.index')">Μαθήματα</Link>
                             <Link :href="route('courses.my-course')">Τα Μαθήματα μου</Link>
                             <Link :href="route('announcements.index')">Ανακοινώσεις</Link>
-                            <Link :href="route('caledar.index')">Ημερολόγιο</Link>
+                            <Link :href="route('calendar.index')">Ημερολόγιο</Link>
+                            <Link :href="route('statistics.index')">Στατιστικά</Link>
                         </div>
                     </div>
 
@@ -63,17 +73,39 @@ const notifications = ref([]);
 
                         <!-- Notification Icon -->
                         <div class="dropdown">
-                            <button type="button" class="btn btn-primary" id="dropdownNotification" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-left: 20px;">
-                                🔔
-                                <span v-if="notifications.length" class="badge bg-danger">{{ notifications.length }}</span>
+                            <button type="button"
+                                class="btn btn-primary"
+                                id="dropdownNotification"
+                                data-bs-toggle="dropdown"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                style="margin-left: 20px;
+                                overflow-y: auto;
+                                max-height:200px;">🔔
+                                <span v-if="notifications.length" class="badge bg-danger">
+                                    {{ notifications.length }}
+                                </span>
                             </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownNotification">
+
+                            <div class="dropdown-menu notification-menu">
                                 <div v-if="notifications.length">
-                                    <a v-for="notif in notifications" :key="notif.id" class="dropdown-item">
-                                        Νέο Course: {{ notif.title }} - {{ new Date(notif.created_at).toLocaleString() }}
+                                    <a v-for="(notification, index) in notifications" :key="notification.id + '-' + index" class="dropdown-item" @click.stop="markAsRead(notification)">
+                                        <div>
+                                            <strong>{{ notification.data?.message || notification.message }}</strong>
+                                            <span style="color: green;">{{ notification.data?.title || notification.title }}</span>
+                                        </div>
+                                        <small class="text-muted">
+                                            {{ new Date(notification.created_at).toLocaleString() }}
+                                        </small>
                                     </a>
                                 </div>
-                                <div v-else class="dropdown-item text-muted">Δεν υπάρχουν νέες ειδοποιήσεις</div>
+                                <div v-else class="dropdown-item text-muted">
+                                    Δεν υπάρχουν νέες ειδοποιήσεις
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-center mt-2">
+                                    <Link :href="route('notifications.index')" class="btn btn-primary">Όλες οι ειδοποιήσεις μου</Link>
+                                </div>
                             </div>
                         </div>
                     </div>

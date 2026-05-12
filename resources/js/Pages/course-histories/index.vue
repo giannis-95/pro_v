@@ -34,8 +34,8 @@
                             </div>
                         </template>
                     </filterCourses>
-                    <Link class="btn btn-secondary ml-2">Εκτύπωση Excel</Link>
-                    <Link class="btn btn-danger ml-2">Εκτύπωση Pdf</Link>
+                    <Link class="btn btn-secondary ml-2" @click="exportExcel">Εκτύπωση Excel</Link>
+                    <Link class="btn btn-danger ml-2" @click="exportPdf">Εκτύπωση Pdf</Link>
                 </div>
             </div>
             <table class="table table-striped">
@@ -79,7 +79,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div class="mt-4">
+            <div class="mt-4 mb-5">
                 <Link v-for="link in course_histories.links" :key="link.label" v-html="link.label" v-bind="link.url ? { href: link.url } : {}"
                     :class="[
                         'btn me-2',
@@ -119,5 +119,13 @@
         router.get('/course-histories',{},{
             onFinish: () => showFilters.value = false
         });
+    }
+
+    function exportExcel(){
+        window.open('/course-histories/export-excel','_blank');
+    }
+
+    function exportPdf(){
+        window.open('/course-histories/export-pdf','_blank');
     }
 </script>

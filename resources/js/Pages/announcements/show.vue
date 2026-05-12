@@ -13,19 +13,19 @@
             <div class="form-group row mb-3 mt-3">
                 <label class="col-sm-2 col-form-label">Τίτλος:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" v-model="announcement.title" disabled>
+                    <input type="text" class="form-control" :value="announcement.title" disabled>
                 </div>
             </div>
             <div class="form-group row mb-3">
                 <label class="col-sm-2 col-form-label">Μάθημα:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" v-model="announcement.course.title" disabled>
+                    <input type="text" class="form-control" :value="announcement.course.title" disabled>
                 </div>
             </div>
                 <div class="form-group row mb-3">
                 <label class="col-sm-2 col-form-label">Καθηγητής:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" v-model="announcement.user.name" disabled>
+                    <input type="text" class="form-control" :value="announcement.user.name" disabled>
                 </div>
             </div>
             <div class="form-group row mb-3">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AnnouncementExport;
 use App\Models\Announcement;
 use App\Http\Requests\Announcements\StoreAnnouncementRequest;
 use App\Http\Requests\Announcements\UpdateAnnouncementRequest;
@@ -13,7 +14,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Filters\AnnouncementFilter;
 use App\Models\History\AnnouncementHistory;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AnnouncementController extends Controller
 {
@@ -45,6 +48,16 @@ class AnnouncementController extends Controller
        return Storage::disk('public')->download($announcement->file);
     }
 
+    public function export_excel(){
+        return Excel::download(new AnnouncementExport(),'announcements.xls');
+    }
+
+    public function export_pdf(){
+        $announcements = Announcement::with(['user','course'])->get();
+        $pdf = Pdf::loadView('pdf.announcements',compact('announcements'));
+        return $pdf->download('announcements.pdf');
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -65,14 +78,11 @@ class AnnouncementController extends Controller
         $data = $request->validated();
         $auth_user = Auth::user()->id;
         $path = null;
-
         $announcement = new Announcement();
 
-        DB::transaction(function () use($request,$data,$auth_user,$announcement) {
+        DB::transaction(function () use($request,$data,$auth_user,$announcement,$path) {
             $user_name = User::find($auth_user)->name;
             $course_title = Course::find($data['course_id'])->title;
-
-            // dd($user_name,$course_title);
             $announcement->title = $data['title'];
             $announcement->message = $data['message'] ?? null;
 
@@ -155,14 +165,9 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement)
     {
         DB::transaction(function () use($announcement){
-            $user = $announcement->user()->get();
-            $coure = $announcement->course()->get();
-
-            dd($user->name,$coure->title);
-
             AnnouncementHistory::create([
-                'user' => $user->name,
-                'course' => $coure->title,
+                'user' => $announcement->user->name,
+                'course' => $announcement->course->title,
                 'title' => $announcement->title,
                 'message' => $announcement->message,
                 'file' => $announcement->file,
@@ -171,7 +176,6 @@ class AnnouncementController extends Controller
 
             $announcement->delete();
         });
-
 
         return redirect()->route('announcements.index')->withSuccess('Η Διαγραφή της ανακοίνωσης έγινε με επιτυχία.');
     }

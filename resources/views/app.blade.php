@@ -20,6 +20,18 @@
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
+    <style>
+        .notification-menu {
+            max-height: 400px;
+            overflow-y: auto;
+            width: 350px;
+        }
+
+        .notification-menu .dropdown-item {
+            white-space: normal;
+            padding: 10px;
+        }
+    </style>
     <body class="font-sans antialiased">
         @inertia
     </body>

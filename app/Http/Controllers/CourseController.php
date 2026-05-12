@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CourseExport;
 use App\Http\Requests\CourseRequest;
 use App\Models\Course;
 use App\Models\User;
@@ -12,9 +13,18 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Filters\CourseFilter;
 use App\Models\History\CourseHistory;
+use App\Notifications\Courses\CourseDeletedNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-// use App\Events\CourseCreated;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Notifications\Courses\CourseCreatedNotification;
+use App\Notifications\Courses\CourseRegisterNotification;
+use App\Notifications\Courses\CourseRestoreNotification;
+use App\Notifications\Courses\CourseUnregisterNotification;
+use App\Notifications\Courses\CourseUpdatedNotification;
+use App\Notifications\Courses\CourseFinalDeletedNotification;
+use Illuminate\Support\Facades\Notification;
 
 class CourseController extends Controller
 {
@@ -42,6 +52,18 @@ class CourseController extends Controller
         ]);
     }
 
+    public function export_excel(){
+        return Excel::download(new CourseExport(),'courses.xlsx');
+    }
+
+    public function export_pdf(){
+        $courses = Course::all();
+
+        $pdf = Pdf::loadView('pdf.courses',compact('courses'));
+
+        return $pdf->download('courses.pdf');
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -49,12 +71,15 @@ class CourseController extends Controller
         return inertia::render('courses/create');
     }
 
-    public function my_course(){
-        $id = Auth::user()->id;
+    public function my_course(Request $request){
+        $filter_course = new CourseFilter($request);
+        $courses = Auth::user()->courses()->getQuery();
 
-        $courses = User::findOrFail($id)->courses()->paginate(10);
+        $courses = $filter_course->filterCourses($courses);
 
-        return Inertia::render('courses/my-course',[
+        $courses = $courses->select('courses.*')->paginate(10);
+
+        return Inertia::render('courses/my-course', [
             'courses' => $courses,
         ]);
     }
@@ -62,27 +87,30 @@ class CourseController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CourseRequest $request){
+   public function store(CourseRequest $request){
         $data = $request->validated();
 
         if($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('courses','public');
         }
 
-        DB::transaction(function () use ($data){
-            Course::create($data);
+        $course = DB::transaction(function () use ($data){
+            $course = Course::create($data);
 
             CourseHistory::create([
                 'title' => $data['title'],
-                'image' => $data['image'],
+                'image' => null,
                 'description' => $data['description'],
                 'status' => 'Ενεργό'
             ]);
+
+            return $course;
         });
 
-        // broadcast(new CourseCreated($course));
+        auth()->user()->notify(new CourseCreatedNotification($course));
 
-        return redirect()->route('courses.index')->withSuccess('Το Μάθημα δημιουργήθηκε με επιτυχία.');
+        return redirect()->route('courses.index')
+            ->withSuccess('Το Μάθημα δημιουργήθηκε με επιτυχία.');
     }
 
     /**
@@ -114,6 +142,7 @@ class CourseController extends Controller
 
         // Mail::to('giannispappas95@gmail.com')->send(new TestMail($message,$course));
 
+        $user->notify(new CourseRegisterNotification($course));
         $user->courses()->attach($id);
 
         // $user->notify(new CourseRegistered($course));
@@ -128,6 +157,9 @@ class CourseController extends Controller
 
     public function unregistration_course($id){
         $user = User::find(Auth::user()->id);
+        $course = $user->courses()->where('course_id',$id)->first();
+
+        $user->notify(new CourseUnregisterNotification($course));
 
         $user->courses()->detach($id);
 
@@ -136,16 +168,16 @@ class CourseController extends Controller
 
     public function unregistration_course_email($id){
         $user = User::find(Auth::user()->id);
-        $course = Course::findOrFail($id);
+        // $course = Course::findOrFail($id);
 
         $user->courses()->detach($id);
 
-        $message_title = 'Απεγραφή Μαθήματος : ' . $course->title;
-        $message_body = 'Μόλις κάνατε την απεγραφή του μαθήματος σας.';
+        // $message_title = 'Απεγραφή Μαθήματος : ' . $course->title;
+        // $message_body = 'Μόλις κάνατε την απεγραφή του μαθήματος σας.';
 
-        Mail::raw($message_body, function ($mail) use ($message_title) {
-            $mail->to('giannispappas95@gmail.com')->subject($message_title);
-        });
+        // Mail::raw($message_body, function ($mail) use ($message_title) {
+        //     $mail->to('giannispappas95@gmail.com')->subject($message_title);
+        // });
 
         return redirect()->back()->withSuccess('Η Απεγραφή του Μαθήματος έγινε με επιτυχία.');
     }
@@ -164,7 +196,9 @@ class CourseController extends Controller
                 'status' => 'Ενεργό'
             ]);
 
-           $course->restore();
+            Notification::send(User::all(), new CourseRestoreNotification($course));
+
+            $course->restore();
         });
 
         return redirect()->route('courses.index')->withSuccess('Η Επαναφορά του μαθήματος έγινε με επιτυχία.');
@@ -184,6 +218,7 @@ class CourseController extends Controller
      */
     public function update(CourseRequest $request, Course $course){
         $data = $request->validated();
+        $users = $course->users()->get();
 
         if($request->hasFile('image')) {
             if($course->image){
@@ -192,6 +227,8 @@ class CourseController extends Controller
 
             $data['image'] = $request->file('image')->store('courses','public');
         }
+
+        Notification::send($users, new CourseUpdatedNotification($course));
 
         $course->fill($data);
         $course->save();
@@ -210,6 +247,8 @@ class CourseController extends Controller
                 'description' => $course->description,
                 'status' => 'Μη Ενεργό'
             ]);
+
+            Notification::send(User::all(), new CourseDeletedNotification($course));
 
             $course->delete();
         });
@@ -233,6 +272,8 @@ class CourseController extends Controller
                 'description' => $course->description,
                 'status' => 'Διεγεγραμένο'
             ]);
+
+            Notification::send(User::all(), new CourseFinalDeletedNotification($course));
 
             $course->forceDelete();
         });

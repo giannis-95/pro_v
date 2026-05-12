@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\CaledarController;
+use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('caledar',    [CaledarController::class,'index'])->name('caledar.index');
+Route::get('calendar',    [CalendarController::class,'index'])->name('calendar.index');

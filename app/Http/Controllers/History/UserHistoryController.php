@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\History;
 
+use App\Exports\History\UserHistoryExport;
 use App\Http\Controllers\Controller;
 use App\Models\History\UserHistory;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Filters\History\UserHistoryFilter;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserHistoryController extends Controller
 {
@@ -32,5 +35,15 @@ class UserHistoryController extends Controller
         return inertia::render('user-histories/show',[
             'user_history' => $userHistory
         ]);
+    }
+
+    public function export_excel(){
+        return Excel::download(new UserHistoryExport(),'users-history.xls');
+    }
+
+    public function export_pdf(){
+        $user_histories = UserHistory::all();
+        $pdf = Pdf::loadView('pdf.history.user-history',compact('user_histories'));
+        return $pdf->download('user-history.pdf');
     }
 }

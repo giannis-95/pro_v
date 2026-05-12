@@ -6,12 +6,12 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Course;
 
-class CourseCreated implements ShouldBroadcast
+class CourseCreated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -36,5 +36,9 @@ class CourseCreated implements ShouldBroadcast
             'title' => $this->course->title,
             'created_at' => $this->course->created_at->toDateTimeString(),
         ];
+    }
+
+    public function broadcastAs(){
+        return 'course.created';
     }
 }

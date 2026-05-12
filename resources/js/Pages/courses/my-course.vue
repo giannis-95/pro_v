@@ -31,7 +31,7 @@
                             <td>
                                 <img v-if="course.image" :src="`/storage/${course?.image}`" height="70" width="70" />
                             </td>
-                            <td>{{ dayjs(course.created_at).format("DD-MM-YYYY HH:mm:ss") }}</td>
+                            <td>{{ course.created_at ? dayjs(course.created_at).format("DD-MM-YYYY") : '-' }}</td>
                         </tr>
 
                         <tr v-if="courses.data.length === 0">
@@ -74,13 +74,13 @@
     });
 
     function filterSearch(filters){
-        router.get(`/courses`,filters,{
+        router.get(`/course/my-course`,filters,{
             preserveState:true,
             replace:true
         });
     }
 
     function filterReset(){
-        router.get(`/courses`,{});
+        router.get(`/course/my-course`,{});
     }
 </script>

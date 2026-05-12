@@ -2,31 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     public function index(){
-        $notifications = auth()->user()->notifications()->paginate(20);
+        $notifications = auth()->user()->unreadNotifications()->latest()->paginate(10);
 
-        return Inertia::render('Notifications/Index', [
-            'title' => 'Ειδοποιήσεις',
-            'notifications' => $notifications,
+        return inertia::render('notifications/index',[
+            'notifications' => $notifications
         ]);
     }
 
-    public function markAsRead(Request $request, $id){
-        $notification = auth()->user()->notifications()->findOrFail($id);
-        $notification->markAsRead();
-
-        return back();
+    public function send(){
+        return auth()->user()->unreadNotifications()->latest()->get();
     }
 
-    public function markAllAsRead(){
-        auth()->user()->unreadNotifications->markAsRead();
+    public function mark_as_read($id){
+        $notification = auth()->user()->notifications()->where('id', $id)->first();
 
-        return back();
+        if($notification){
+            $notification->markAsRead();
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+    public function mark_all_as_read(){
+        // auth()->user()->unreadNotifications->markAsRead();
+
+        // return back();
+    }
+
+    public function destroy($id){
+        $notification = auth()->user()->notifications()->where('id',$id)->firstOrFail();
+        $notification->delete();
+        return redirect()->back()->withSuccess('Η ειδοποιήση διαγράφηκε με επιτυχία.');
     }
 }

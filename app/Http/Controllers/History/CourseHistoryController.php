@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\History;
 
+use App\Exports\History\CourseHistoryExport;
 use App\Http\Controllers\Controller;
 use App\Models\History\CourseHistory;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Filters\History\CourseHistoryFilter;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CourseHistoryController extends Controller
 {
@@ -17,7 +20,7 @@ class CourseHistoryController extends Controller
     {
         $course_history_class = new CourseHistoryFilter($request);
 
-        $course_histories = $course_history_class->filterCourseHistory(CourseHistory::query())->paginate(8)->withQueryString();
+        $course_histories = $course_history_class->filterCourseHistory(CourseHistory::query())->paginate(12)->withQueryString();
 
         return inertia::render('course-histories/index',[
             'course_histories' => $course_histories
@@ -32,5 +35,16 @@ class CourseHistoryController extends Controller
         return Inertia::render('course-histories/show',[
             'course_history' => $courseHistory
         ]);
+    }
+
+    public function export_excel(){
+        return Excel::download(new CourseHistoryExport,'course-histories.xlsx');
+    }
+
+    public function export_pdf(){
+        $course_histories = CourseHistory::all();
+
+        $pdf = Pdf::loadView('pdf.history.course-history',compact('course_histories'));
+        return $pdf->download('course-histories.pdf');
     }
 }

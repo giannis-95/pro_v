@@ -40,13 +40,11 @@ class UserController extends Controller
         ]);
     }
 
-    public function exportExcel()
-    {
-        return Excel::download(new UsersExport, 'users.xlsx');
+    public function exportExcel(){
+        return Excel::download(new UsersExport(), 'users.xlsx');
     }
 
-    public function exportPdf()
-    {
+    public function exportPdf(){
         $users = User::all();
 
         $pdf = Pdf::loadView('pdf.users', compact('users'));

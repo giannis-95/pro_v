@@ -180,11 +180,11 @@
         });
     }
 
-    function exportExcel() {
+    function exportExcel(){
        window.open('/users/export-excel', '_blank');
     }
 
-    function exportPdf() {
+    function exportPdf(){
         window.open('/users/export-pdf', '_blank');
     }
 </script>

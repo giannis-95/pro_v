@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class UnRegisterCourse extends Notification
+class UserDeletedNotification extends Notification
 {
     use Queueable;
 

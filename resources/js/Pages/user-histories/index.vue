@@ -34,8 +34,8 @@
                             </div>
                         </template>
                     </filterUsers>
-                    <Link class="btn btn-secondary ml-2">Εκτύπωση Excel</Link>
-                    <Link class="btn btn-danger ml-2">Εκτύπωση Pdf</Link>
+                    <Link class="btn btn-secondary ml-2" @click="exportExcel">Εκτύπωση Excel</Link>
+                    <Link class="btn btn-danger ml-2" @click="exportPdf">Εκτύπωση Pdf</Link>
                 </div>
             </div>
             <table class="table table-striped">
@@ -118,5 +118,13 @@
         router.get(`/user-histories`,{},{
             onFinish: () => showFilters.value = false
         });
+    }
+
+    function exportExcel(){
+        window.open('/user-histories/export-excel','_blank');
+    }
+
+    function exportPdf(){
+        window.open('/user-histories/export-pdf','_blank');
     }
 </script>
