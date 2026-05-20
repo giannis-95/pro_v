@@ -16,10 +16,11 @@ Route::middleware('auth')->group(function(){
     require __DIR__ . '/announcements.php';
     require __DIR__ . '/caledar.php';
     require __DIR__ . '/notification.php';
-     require __DIR__ . '/statistics.php';
+    require __DIR__ . '/statistics.php';
     require __DIR__ . '/histories/users.php';
     require __DIR__ . '/histories/courses.php';
     require __DIR__ . '/histories/announcements.php';
+    require __DIR__ . '/message.php';
 });
 
 require __DIR__.'/auth.php';

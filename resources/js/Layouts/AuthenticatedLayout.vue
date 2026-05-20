@@ -14,6 +14,12 @@ onMounted(async () => {
     window.Echo.private(`App.Models.User.${userId}`).notification((notification) => {
         notifications.value.unshift(notification);
     });
+
+    // window.Echo.channel('chat')
+    // .listen('MessageSent', (e) => {
+    //     console.log('New message:', e.message)
+    //     messages.value.push(e.message)
+    // })
 });
 
 const markAsRead = async (notification) => {
@@ -23,28 +29,29 @@ const markAsRead = async (notification) => {
         notification_user => notification_user.id !== notification.id
     );
 };
+
+const isAdmin = usePage().props.auth.user.roles.some(role => role.name === 'Διαχειριστής');
 </script>
 
 <template>
 <div>
     <div class="min-h-screen">
         <nav class="border-b bg-white">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
                 <div class="flex h-16 justify-between">
-
                     <!-- Links -->
-                    <div class="flex">
-                        <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <div class="flex mt-4">
+                        <div class="hidden space-x-6 sm:-my-px sm:ms-7 sm:flex">
                             <Link :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</Link>
-                            <Link :href="route('users.index')">Χρήστες</Link>
+                            <Link :href="route('users.index')" v-if="isAdmin">Χρήστες</Link>
                             <Link :href="route('courses.index')">Μαθήματα</Link>
                             <Link :href="route('courses.my-course')">Τα Μαθήματα μου</Link>
                             <Link :href="route('announcements.index')">Ανακοινώσεις</Link>
+                            <Link :href="route('messages.index')">Μηνύματα</Link>
                             <Link :href="route('calendar.index')">Ημερολόγιο</Link>
-                            <Link :href="route('statistics.index')">Στατιστικά</Link>
+                            <Link :href="route('statistics.index')" v-if="isAdmin">Στατιστικά</Link>
                         </div>
                     </div>
-
                     <!-- User Dropdown & Notifications -->
                     <div class="hidden sm:ms-6 sm:flex sm:items-center">
                         <!-- User Dropdown -->
@@ -58,7 +65,6 @@ const markAsRead = async (notification) => {
                                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
                                         </svg>
                                     </button>
-
                                     <div v-if="open" class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                                         <div class="py-1">
                                             <form :action="route('logout')" method="POST" class="block px-4 py-2">
@@ -70,7 +76,6 @@ const markAsRead = async (notification) => {
                                 </div>
                             </div>
                         </div>
-
                         <!-- Notification Icon -->
                         <div class="dropdown">
                             <button type="button"
@@ -86,7 +91,6 @@ const markAsRead = async (notification) => {
                                     {{ notifications.length }}
                                 </span>
                             </button>
-
                             <div class="dropdown-menu notification-menu">
                                 <div v-if="notifications.length">
                                     <a v-for="(notification, index) in notifications" :key="notification.id + '-' + index" class="dropdown-item" @click.stop="markAsRead(notification)">
@@ -109,7 +113,6 @@ const markAsRead = async (notification) => {
                             </div>
                         </div>
                     </div>
-
                     <!-- Hamburger -->
                     <div class="-me-2 flex items-center sm:hidden">
                         <button @click="showingNavigationDropdown = !showingNavigationDropdown"
@@ -123,13 +126,11 @@ const markAsRead = async (notification) => {
                 </div>
             </div>
         </nav>
-
         <header class="bg-white shadow" v-if="$slots.header">
             <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                 <slot name="header" />
             </div>
         </header>
-
         <main>
             <slot />
         </main>

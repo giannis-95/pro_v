@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\User;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -29,10 +30,13 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $request->user(),
+                'roles' => $user ? $user->getRoleNames()->toArray() : [],
             ],
         ];
     }
