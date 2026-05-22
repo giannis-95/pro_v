@@ -1,38 +1,37 @@
 <?php
 
-namespace App\Notifications\Announcements;
+namespace App\Notifications\Users;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class AnnouncementDeletedNotification extends Notification implements ShouldQueue
+class UserFinalDeletedNotification extends Notification
 {
     use Queueable;
 
     /**
      * Create a new notification instance.
      */
-    public $announcementTitle;
+    public $userName;
 
-    public function __construct($announcement)
+    public function __construct($user)
     {
-        $this->announcementTitle = $announcement->title;
+        $this->userName = $user->name;
     }
 
     public function toBroadcast(){
         return new BroadcastMessage([
-            'title' => $this->announcementTitle,
-            'message' => 'Διαγράφηκε η ανακοίνωση',
+            'title' => $this->userName,
+            'message' => 'Ο χρήστης διαγράφηκε οριστικά',
             'created_at' => now()->toDateTimeString()
         ]);
     }
 
     public function toDatabase(){
         return[
-               'title' => $this->announcementTitle,
-            'message' => 'Διαγράφηκε η ανακοίνωση',
+            'title' => $this->userName,
+            'message' => 'Ο χρήστης διαγράφηκε οριστικά',
             'created_at' => now()->toDateTimeString()
         ];
     }

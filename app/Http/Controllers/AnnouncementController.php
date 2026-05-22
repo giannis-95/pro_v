@@ -14,8 +14,12 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Filters\AnnouncementFilter;
 use App\Models\History\AnnouncementHistory;
+use App\Notifications\Announcements\AnnouncementCreatedNotification;
+use App\Notifications\Announcements\AnnouncementDeletedNotification;
+use App\Notifications\Announcements\AnnouncementUpdatedNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Maatwebsite\Excel\Facades\Excel;
 
 class AnnouncementController extends Controller
@@ -82,7 +86,8 @@ class AnnouncementController extends Controller
 
         DB::transaction(function () use($request,$data,$auth_user,$announcement,$path) {
             $user_name = User::find($auth_user)->name;
-            $course_title = Course::find($data['course_id'])->title;
+            $course = Course::find($data['course_id']);
+            $registered_course_users = $course->users()->get();
             $announcement->title = $data['title'];
             $announcement->message = $data['message'] ?? null;
 
@@ -95,12 +100,14 @@ class AnnouncementController extends Controller
 
             AnnouncementHistory::create([
                 'user' => $user_name,
-                'course' => $course_title,
+                'course' => $course->title,
                 'title' => $announcement->title,
                 'message' => $announcement->message,
                 'file' => $path,
                 'status' => 'Ενεργή'
             ]);
+
+            Notification::send($registered_course_users, new AnnouncementCreatedNotification($announcement));
 
             $announcement->user()->associate($auth_user);
             $announcement->course()->associate($data['course_id']);
@@ -146,11 +153,15 @@ class AnnouncementController extends Controller
         $data = $request->validated();
         $announcement->title = $data['title'];
         $path = null;
+        $course = Course::find($data['course_id']);
+        $registered_course_users = $course->users()->get();
 
         if($request->hasFile('file')){
             $file = $request->file('file')->getClientOriginalName();
             $path = $request->file('file')->storeAs('announcements', $file ,'public');
         }
+
+        Notification::send($registered_course_users ,new AnnouncementUpdatedNotification($announcement));
 
         $announcement->course()->associate($data['course_id']);
         $announcement->file = $path;
@@ -165,6 +176,8 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement)
     {
         DB::transaction(function () use($announcement){
+            $registered_course_users = $announcement->course->users;
+
             AnnouncementHistory::create([
                 'user' => $announcement->user->name,
                 'course' => $announcement->course->title,
@@ -173,6 +186,8 @@ class AnnouncementController extends Controller
                 'file' => $announcement->file,
                 'status' => 'Διαγραμμένη'
             ]);
+
+            Notification::send($registered_course_users ,new AnnouncementDeletedNotification($announcement));
 
             $announcement->delete();
         });

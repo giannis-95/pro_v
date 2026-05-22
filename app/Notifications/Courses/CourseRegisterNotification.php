@@ -25,16 +25,15 @@ class CourseRegisterNotification extends Notification implements ShouldQueue
     {
         return [
             'title' => $this->courseTitle,
-            'message' => 'Μόλις κάνετε εγγραφή στο μάθημα ',
+            'message' => 'Μόλις κάνετε εγγραφή στο μάθημα',
             'created_at' => now()->toDateTimeString()
         ];
     }
 
-    public function toBroadcast()
-    {
+    public function toBroadcast(){
        return new BroadcastMessage([
             'title' => $this->courseTitle,
-            'message' => 'Μόλις κάνετε εγγραφή στο μάθημα ',
+            'message' => 'Μόλις κάνετε εγγραφή στο μάθημα',
             'created_at' => now()->toDateTimeString()
        ]);
     }

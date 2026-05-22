@@ -25,7 +25,7 @@ class CourseCreatedNotification extends Notification implements ShouldQueue
     {
         return [
             'title' => $this->courseTitle,
-            "message" => "Νέο Μάθημα",
+            "message" => 'Νέο Μάθημα',
             'created_at' => now()->toDateTimeString(),
         ];
     }
@@ -34,7 +34,7 @@ class CourseCreatedNotification extends Notification implements ShouldQueue
     {
         return new BroadcastMessage([
             'title' => $this->courseTitle,
-            "message" => "Νέο Μάθημα",
+            "message" => 'Νέο Μάθημα',
             'created_at' => now()->toDateTimeString(),
         ]);
     }

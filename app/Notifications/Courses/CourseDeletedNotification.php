@@ -24,17 +24,16 @@ class CourseDeletedNotification extends Notification implements ShouldQueue
     public function toDatabase() :array
     {
         return[
-            'message' => "Διαγράφηκε το μάθημα ",
             'title' => $this->courseTitle,
+            'message' => 'Διαγράφηκε το μάθημα',
             'created_at' => now()->toDateTimeString()
         ];
     }
 
-    public function toBroadcast()
-    {
+    public function toBroadcast(){
        return new BroadcastMessage([
-            'message' => "Διαγράφηκε το μάθημα ",
             'title' => $this->courseTitle,
+            'message' => 'Διαγράφηκε το μάθημα',
             'created_at' => now()->toDateTimeString()
        ]);
     }

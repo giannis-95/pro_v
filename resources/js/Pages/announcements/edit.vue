@@ -41,7 +41,7 @@
                 <div class="form-group row mb-3">
                     <label class="col-sm-2 col-form-label">Μήνυμα</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" rows="4" v-model="update_announcement.message">{{ announcement.message }}</textarea>
+                        <textarea class="form-control" rows="4" v-model="update_announcement.message"></textarea>
                     </div>
                 </div>
                 <div class="row mt-4">
@@ -73,7 +73,7 @@
     const update_announcement = useForm({
         title: props.announcement.title,
         course_id: props.announcement.course_id,
-        file: props.announcement.file,
+        file: null,
         message: props.announcement.message
     });
 
@@ -83,8 +83,8 @@
 
     function submit(){
         router.put(route('announcements.update', {
-            announcement: props.announcement.id
-        }),
+                announcement: props.announcement.id
+            }),
             update_announcement
         );
     }

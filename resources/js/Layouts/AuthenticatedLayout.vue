@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { Link , usePage } from '@inertiajs/vue3';
+
 const open = ref(false);
 const showingNavigationDropdown = ref(false);
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -96,6 +97,8 @@ const isAdmin = usePage().props.auth.user.roles.some(role => role.name === 'Δι
                                     <a v-for="(notification, index) in notifications" :key="notification.id + '-' + index" class="dropdown-item" @click.stop="markAsRead(notification)">
                                         <div>
                                             <strong>{{ notification.data?.message || notification.message }}</strong>
+                                        </div>
+                                        <div>
                                             <span style="color: green;">{{ notification.data?.title || notification.title }}</span>
                                         </div>
                                         <small class="text-muted">

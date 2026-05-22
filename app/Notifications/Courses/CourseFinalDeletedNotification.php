@@ -25,7 +25,7 @@ class CourseFinalDeletedNotification extends Notification implements ShouldQueue
     public function toBroadcast(){
         return new BroadcastMessage([
             'title' => $this->courseTitle,
-            'message' => 'Το μάθημα διαγράφηκε οριστικά ',
+            'message' => 'Το μάθημα διαγράφηκε οριστικά',
             'created_at' => now()->toDateTimeString()
         ]);
     }
@@ -33,7 +33,7 @@ class CourseFinalDeletedNotification extends Notification implements ShouldQueue
     public function toDatabase(){
         return[
             'title' => $this->courseTitle,
-            'message' => 'Το μάθημα διαγράφηκε οριστικά ',
+            'message' => 'Το μάθημα διαγράφηκε οριστικά',
             'created_at' => now()->toDateTimeString()
         ];
     }

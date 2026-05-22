@@ -26,7 +26,7 @@ class CourseRestoreNotification extends Notification implements ShouldQueue
     {
         return new BroadcastMessage([
             'title' => $this->courseTile,
-            'message' => 'Εγινε επαναφορα του μαθήματος ',
+            'message' => 'Εγινε επαναφορα του μαθήματος',
             'created_at' => now()->toDateTimeString()
         ]);
     }
@@ -34,7 +34,7 @@ class CourseRestoreNotification extends Notification implements ShouldQueue
     public function toDatabase(){
         return[
             'title' => $this->courseTile,
-            'message' => 'Εγινε επαναφορα του μαθήματος ',
+            'message' => 'Εγινε επαναφορα του μαθήματος',
             'created_at' => now()->toDateTimeString()
         ];
     }

@@ -24,7 +24,7 @@ class CourseUnregisterNotification extends Notification implements ShouldQueue
     public function toBroadcast(){
         return new BroadcastMessage([
             'title' => $this->courseTitle,
-            'message' => 'Μόλις κάνανε απεγραφή από το μάθημα ',
+            'message' => 'Μόλις κάνατε απεγραφή από το μάθημα ',
             'created_at' => now()->toDateTimeString()
         ]);
     }
@@ -32,7 +32,7 @@ class CourseUnregisterNotification extends Notification implements ShouldQueue
     public function toDatabase(){
         return[
             'title' => $this->courseTitle,
-            'message' => 'Μόλις κάνανε απεγραφή από το μάθημα ',
+            'message' => 'Μόλις κάνατε απεγραφή από το μάθημα ',
             'created_at' => now()->toDateTimeString()
         ];
     }

@@ -24,7 +24,7 @@ class CourseUpdatedNotification extends Notification implements ShouldQueue
     public function toBroadcast(){
         return new BroadcastMessage([
             'title' => $this->courseTitle,
-            'message' => 'Μόλις ενημερώθηκε το μάθημα ',
+            'message' => 'Μόλις ενημερώθηκε το μάθημα',
             'created_at' => now()->toDateTimeString()
         ]);
     }
@@ -32,7 +32,7 @@ class CourseUpdatedNotification extends Notification implements ShouldQueue
     public function toDatabase(){
         return[
             'title' => $this->courseTitle,
-            'message' => 'Μόλις ενημερώθηκε το μάθημα ',
+            'message' => 'Μόλις ενημερώθηκε το μάθημα',
             'created_at' => now()->toDateTimeString()
         ];
     }

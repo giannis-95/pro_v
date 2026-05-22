@@ -13,8 +13,14 @@ use App\Filters\UserFilter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Exports\UsersExport;
+use App\Notifications\Users\UserCreatedNotification;
+use App\Notifications\Users\UserDeletedNotification;
+use App\Notifications\Users\UserFinalDeletedNotification;
+use App\Notifications\Users\UserRestoreNotification;
+use App\Notifications\Users\UserUpdatedNotification;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Notification;
 
 class UserController extends Controller
 {
@@ -77,6 +83,8 @@ class UserController extends Controller
         $user_data['password'] = Hash::make($request->input('password'));
 
         DB::transaction(function () use ($user_data){
+            $admins = User::role('Διαχειριστής')->get();
+
             $user = User::create([
                 'name' => $user_data['name'],
                 'email' => $user_data['email'],
@@ -84,6 +92,8 @@ class UserController extends Controller
             ]);
 
             $user->assignRole($user_data['role']);
+
+            Notification::send($admins, new UserCreatedNotification($user));
 
             UserHistory::create([
                 'name' => $user_data['name'],
@@ -97,6 +107,7 @@ class UserController extends Controller
     }
 
     public function update(Request $request, User $user){
+        $admins = User::role('Διαχειριστής')->get();
         $data = $request->only([
             'name',
             'email',
@@ -110,6 +121,9 @@ class UserController extends Controller
         }
 
         $data['password'] = Hash::make($request->input('password'));
+
+        Notification::send($admins, new UserUpdatedNotification($user));
+
         $user->fill($data);
         $user->save();
 
@@ -122,6 +136,8 @@ class UserController extends Controller
         $role = $user->getRoleNames()->first();
 
         DB::transaction(function() use($user,$role){
+            $admins = User::role('Διαχειριστής')->get();
+
             UserHistory::create([
                 'name' => $user->name,
                 'email' => $user->email,
@@ -129,8 +145,10 @@ class UserController extends Controller
                 'status' => 'Μη Ενεργός'
             ]);
 
+            Notification::send($admins, new UserDeletedNotification($user));
             $user->delete();
         });
+
 
         return redirect()->back()->withSuccess('Η Διαγραφή του χρήστη έγινε με επιτυχία.');
     }
@@ -143,6 +161,8 @@ class UserController extends Controller
         $role = $user->getRoleNames()->first();
 
         DB::transaction(function () use($user,$role){
+            $admins = User::role('Διαχειριστής')->get();
+
             UserHistory::create([
                 'name' => $user->name,
                 'email' => $user->email,
@@ -150,6 +170,7 @@ class UserController extends Controller
                 'status' => 'Ενεργός'
             ]);
 
+            Notification::send($admins, new UserRestoreNotification($user));
             $user->restore();
         });
 
@@ -164,12 +185,16 @@ class UserController extends Controller
         $role = $user->getRoleNames()->first();
 
         DB::transaction(function () use ($user,$role){
+            $admins = User::role('Διαχειριστής')->get();
+
             UserHistory::create([
                 'name' => $user->name,
                 'email' => $user->email,
                 'role' => $role,
                 'status' => 'Διεγεγραμένος'
             ]);
+
+            Notification::send($admins, new UserFinalDeletedNotification($user));
 
             $user->removeRole($role);
             $user->forceDelete();
