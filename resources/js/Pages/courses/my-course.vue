@@ -27,7 +27,9 @@
                             <td>
                                 <Link :href="route('course.unregistration_course', course.id)" class="btn btn-danger" disabled>Απεγραφή</Link>
                             </td>
-                            <td>{{ course.title }}</td>
+                            <td>
+                                <Link :href="route('courses.show',course.id)">{{ course.title }}</Link>
+                            </td>
                             <td>
                                 <img v-if="course.image" :src="`/storage/${course?.image}`" height="70" width="70" />
                             </td>

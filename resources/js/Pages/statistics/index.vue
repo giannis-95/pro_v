@@ -3,6 +3,7 @@
         <div class="container">
             <div class="row mt-4">
                 <div class="col">
+                    <button class="btn btn-danger me-2">Εξαγωγή pdf</button>
                     <Link :href="route('statistics.courses')" class="btn btn-primary me-2">Στατιστικά Μαθημάτων</Link>
                     <Link :href="route('statistics.my-courses')" class="btn btn-primary me-2">Στατιστικά των Μαθημάτων μου</Link>
                     <Link :href="route('statistics.announcements')" class="btn btn-primary">Στατιστικά Ανακοίνωσεων</Link>

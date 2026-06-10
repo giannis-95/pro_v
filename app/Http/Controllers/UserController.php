@@ -59,10 +59,12 @@ class UserController extends Controller
     }
 
     public function show(User $user){
+        $registered_courses = $user->courses()->paginate(10);
         $user->role = $user->getRoleNames()->first();
 
         return Inertia::render('users/show',[
             'user' => $user,
+            'registered_courses' => $registered_courses
         ]);
     }
 

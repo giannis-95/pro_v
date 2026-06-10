@@ -6,8 +6,11 @@
                     <h4>Στατιστικά των μαθημάτων μου</h4>
                 </div>
             </div>
-            <div class="row text-end mt-2 mb-4">
+            <div class="row mt-2 mb-4">
                 <div class="col">
+                    <button class="btn btn-danger me-2">Εξαγωγή pdf</button>
+                </div>
+                <div class="col text-end">
                     <Link :href="route('statistics.index')" class="btn btn-primary">Πίσω</Link>
                 </div>
             </div>

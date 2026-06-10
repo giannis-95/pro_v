@@ -13,7 +13,7 @@ class MessageController extends Controller
 {
     public function index(){
         return Inertia::render('messages/index', [
-            'messages' => Message::with('user')->latest()->get()
+            'messages' => Message::with('user')->orderBy('created_at')->get()
         ]);
     }
 

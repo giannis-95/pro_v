@@ -33,10 +33,10 @@ class AnnouncementController extends Controller
         $announcement_filter = new AnnouncementFilter($request);
         $announcements = $announcement_filter->filterAnnouncement(Announcement::with(['course', 'user'])->orderBy('created_at','DESC'))->paginate(10);
 
-        $courses = Course::withoutTrashed();
+        $courses = Auth::user()->courses()->withoutTrashed()->get();
         $instructor_admins = User::withoutTrashed()->role(['Καθηγητής','Διαχειριστής'])->get();
 
-        $user_role = User::find($auth_user_id)->getRoleNames()->first();
+        $user_role = Auth::user()->getRoleNames()->first();
 
         return Inertia::render('announcements/index',[
             'announcements' => $announcements,

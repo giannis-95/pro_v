@@ -8,12 +8,15 @@
             </div>
             <hr>
             <div style="overflow-y: scroll;">
-                <div v-for="msg in messages" :key="msg.id" class="mt-2">
-                    <span>{{ msg.user.name }} : </span>
-                    {{ msg.text }}
+                <div v-for="message in messages" :key="message.id" class="mt-2">
+                    <span>{{ message.user.name }} : </span>
+                    {{ message.text }}
+                     <div class="row">
+                        <span style="font-size: 10px;color: green;">{{ dayjs(message.created_at).format("DD-MM-YYYY HH:mm:ss") }}</span>
+                    </div>
                 </div>
             </div>
-            <div class="row mt-5">
+            <div class="row mt-5 mb-5">
                 <textarea v-model="text" @keydown.enter.exact.prevent="sendMessage" rows="4" class="form-control" placeholder="Στείλτε μηνύμα...."></textarea>
             </div>
         </div>
@@ -24,6 +27,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import dayjs from 'dayjs';
 
 const props = defineProps({
     messages: Array
@@ -48,5 +52,4 @@ const sendMessage = async () => {
     messages.value.push(response.data)
     text.value = ''
 }
-
 </script>

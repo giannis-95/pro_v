@@ -15,4 +15,3 @@ Route::get('/course/{id}/unregistration_course',          [CourseController::cla
 Route::get('/course/my-course',                           [CourseController::class,'my_course'])->name('courses.my-course');
 Route::get('/course/{id}/restore',                        [CourseController::class,'restore'])->name('course.restore');
 Route::get('/course/{id}/final_deleted',                  [CourseController::class,'final_deleted'])->name('course.final_deleted');
-

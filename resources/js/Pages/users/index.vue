@@ -23,12 +23,12 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Name</th>
+                        <th>Όνομα</th>
                         <th>Email</th>
                         <th>Ρόλος</th>
-                        <th>Created at</th>
+                        <th>Ημερομηνία Δημιουργίας</th>
                         <th>Κατάσταση</th>
-                        <th>Actions</th>
+                        <th>Ενέργειες</th>
                     </tr>
                 </thead>
                 <tbody>

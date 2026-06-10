@@ -21,6 +21,8 @@ Route::middleware('auth')->group(function(){
     require __DIR__ . '/histories/courses.php';
     require __DIR__ . '/histories/announcements.php';
     require __DIR__ . '/message.php';
+    require __DIR__ . '/registered-students.php';
+    require __DIR__ . '/payments.php';
 });
 
 require __DIR__.'/auth.php';

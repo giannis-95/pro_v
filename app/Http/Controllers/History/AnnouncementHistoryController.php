@@ -24,7 +24,7 @@ class AnnouncementHistoryController extends Controller
 
         $announcement_histories = $announcement_history_class->filterAnnouncementHistory(AnnouncementHistory::query())->paginate(10)->withQueryString();
         $instructor_admins = User::withoutTrashed()->role(['Καθηγητής','Διαχειριστής'])->get();
-        $courses = Course::withoutTrashed();
+        $courses = Course::withoutTrashed()->get();
 
         return inertia::render('announcement-histories/index',[
             'announcement_histories' => $announcement_histories,

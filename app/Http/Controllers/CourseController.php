@@ -109,16 +109,22 @@ class CourseController extends Controller
 
         auth()->user()->notify(new CourseCreatedNotification($course));
 
-        return redirect()->route('courses.index')
-            ->withSuccess('Το Μάθημα δημιουργήθηκε με επιτυχία.');
+        return redirect()->route('courses.index')->withSuccess('Το Μάθημα δημιουργήθηκε με επιτυχία.');
     }
 
     /**
      * Display the specified resource.
      */
     public function show(Course $course){
+        $auth_user = Auth::user();
+
+        $role = $auth_user->getRoleNames()->first();
+        $registered_user = $auth_user->courses()->where('courses.id', $course->id)->exists();
+
         return inertia::render('courses/show',[
-            'course' => $course
+            'course' => $course,
+            'registered_user' => $registered_user,
+            'role' => $role
         ]);
     }
 

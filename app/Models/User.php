@@ -48,5 +48,11 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-}
 
+    protected $appends = ['user_name_email'];
+
+    public function getUserNameEmailAttribute()
+    {
+        return 'Όνομα: ' .  $this->name . ' - ' . 'Email: ' . $this->email;
+    }
+}
