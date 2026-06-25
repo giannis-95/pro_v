@@ -19,12 +19,14 @@ class MessageController extends Controller
 
     public function store(StoreMessageRequest $request){
         $data = $request->validated();
+        $user =  Auth::id();
 
-        $message = Message::create([
-            'text' => $data['text'],
-            'user_id' => Auth::id()
+        $message = new Message([
+            'text' => $data['text']
         ]);
 
+        $message->user()->associate($user);
+        $message->save();
         $message->load('user');
 
         broadcast(new MessageSent($message))->toOthers();

@@ -10,7 +10,6 @@ class Message extends Model
     use MessageRelationship;
 
     protected $fillable = [
-        'text',
-        'user_id'
+        'text'
     ];
 }

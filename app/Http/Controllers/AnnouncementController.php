@@ -11,7 +11,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
-use App\Filters\AnnouncementFilter;
 use App\Models\History\AnnouncementHistory;
 use App\Notifications\Announcements\AnnouncementCreatedNotification;
 use App\Notifications\Announcements\AnnouncementDeletedNotification;

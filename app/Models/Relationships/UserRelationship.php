@@ -13,5 +13,6 @@ trait UserRelationship{
     public function messages(){
         return $this->belongsToMany(Message::class);
     }
+
 }
 
