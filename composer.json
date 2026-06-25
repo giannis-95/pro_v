@@ -16,6 +16,8 @@
         "maatwebsite/excel": "^3.1",
         "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-permission": "^6.21",
+        "spatie/laravel-query-builder": "^7.3",
+        "stripe/stripe-php": "^20.2",
         "textalk/websocket": "^1.5",
         "tightenco/ziggy": "^2.6"
     },

@@ -163,9 +163,15 @@
     }
 
     function filterSearch(filters){
-        router.get(`/courses`,filters,{
-            preserveState:true,
-            replace:true
+        router.get(`/courses`,{
+            filter: {
+                title: filters.title,
+                date_to: filters.date_to,
+                date_from: filters.date_from,
+            }
+        },{
+            preserveState: true,
+            replace: true
         });
     }
 

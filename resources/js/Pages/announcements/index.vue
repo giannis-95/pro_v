@@ -118,8 +118,16 @@
     const show_announcement_filters = ref(false);
     const announcement_delete = ref(null);
 
-    function searchFilters(announcement){
-        router.get(route(`announcements.index`),announcement,{
+    function searchFilters(filters){
+        router.get(route(`announcements.index`),{
+            filter: {
+                title: filters.title,
+                course: filters.course,
+                user: filters.user,
+                date_from: filters.date_from,
+                date_to: filters.date_to,
+            }
+        },{
             preserveState:true,
             replace:true
         });

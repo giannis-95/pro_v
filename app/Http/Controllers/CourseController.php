@@ -11,11 +11,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Filters\CourseFilter;
 use App\Models\History\CourseHistory;
 use App\Notifications\Courses\CourseDeletedNotification;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Notifications\Courses\CourseCreatedNotification;
@@ -25,6 +23,8 @@ use App\Notifications\Courses\CourseUnregisterNotification;
 use App\Notifications\Courses\CourseUpdatedNotification;
 use App\Notifications\Courses\CourseFinalDeletedNotification;
 use Illuminate\Support\Facades\Notification;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class CourseController extends Controller
 {
@@ -32,19 +32,26 @@ class CourseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request){
-        $filter_course = new CourseFilter($request);
-
+    public function index(){
         $user = Auth::user();
         $user_role = User::find($user->id)->getRoleNames()->first();
 
-        $courses = $filter_course->filterCourses(Course::withTrashed())
-                    ->paginate(10)
-                    ->through(function ($course) use ($user) {
-                        $course->is_registered = $course->users->contains($user);
-                        $course->is_deleted = $course->trashed();
-                        return $course;
-                    });
+        $courses = QueryBuilder::for(Course::withTrashed())
+            ->allowedFilters(
+                AllowedFilter::partial('title'),
+                AllowedFilter::callback('date_from' , function($query,$date_from){
+                    $query->whereDate('created_at', '<=' ,$date_from);
+                }),
+                AllowedFilter::callback('date_to', function($query,$date_to){
+                    $query->whereDate('created_at', '>=' , $date_to);
+                })
+            )
+            ->paginate(10)
+            ->through(function ($course) use ($user) {
+                $course->is_registered = $course->users->contains($user);
+                $course->is_deleted = $course->trashed();
+                return $course;
+            });
 
         return Inertia::render('courses/index',[
             'courses' => $courses,
@@ -71,13 +78,22 @@ class CourseController extends Controller
         return inertia::render('courses/create');
     }
 
-    public function my_course(Request $request){
-        $filter_course = new CourseFilter($request);
-        $courses = Auth::user()->courses()->getQuery();
-
-        $courses = $filter_course->filterCourses($courses);
-
-        $courses = $courses->select('courses.*')->paginate(10);
+    public function my_course(){
+        $courses = QueryBuilder::for(
+                        User::find(Auth::user()->id)
+                            ->courses()
+                            ->getQuery()
+                    )->allowedFilters(
+                        AllowedFilter::partial('title'),
+                        AllowedFilter::callback('date_from', function ($query, $date_from) {
+                            $query->whereDate('courses.created_at', '<=', $date_from);
+                        }),
+                        AllowedFilter::callback('date_to', function ($query, $date_to) {
+                            $query->whereDate('courses.created_at', '>=', $date_to);
+                        })
+                    )
+                    ->select('courses.*')
+                    ->paginate(10);
 
         return Inertia::render('courses/my-course', [
             'courses' => $courses,

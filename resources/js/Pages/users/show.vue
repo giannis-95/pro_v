@@ -56,7 +56,7 @@
                             <td>{{ course.id }}</td>
                             <td>{{ course.title }}</td>
                             <td>
-                                <img height="80" width="80" :src="`/storage/${course.image }`" />
+                                <img v-if="course.image" height="80" width="80" :src="`/storage/${course.image }`" />
                             </td>
                             <td>{{ dayjs(course.created_at).format("DD-MM-YYYY HH:mm:ss") }}</td>
                         </tr>

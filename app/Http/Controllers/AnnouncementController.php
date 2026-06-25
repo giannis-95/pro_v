@@ -11,7 +11,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\Request;
 use App\Filters\AnnouncementFilter;
 use App\Models\History\AnnouncementHistory;
 use App\Notifications\Announcements\AnnouncementCreatedNotification;
@@ -21,17 +20,39 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Maatwebsite\Excel\Facades\Excel;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class AnnouncementController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
         $auth_user_id = Auth::user()->id;
-        $announcement_filter = new AnnouncementFilter($request);
-        $announcements = $announcement_filter->filterAnnouncement(Announcement::with(['course', 'user'])->orderBy('created_at','DESC'))->paginate(10);
+
+        $announcements = QueryBuilder::for(Announcement::query())
+                ->with(['course', 'user'])
+                ->allowedFilters(
+                    AllowedFilter::partial('title'),
+                    AllowedFilter::callback('date_from', function($query,$date_from){
+                        $query->whereDate('created_at', '>=', $date_from);
+                    }),
+                    AllowedFilter::callback('date_to',function($query,$date_to){
+                        $query->whereDate('created_at', '<=', $date_to);
+                    }),
+                    AllowedFilter::callback('course',function($query,$course){
+                        $query->whereHas('courses',function($query) use ($course){
+                            $query->where('id',$course);
+                        });
+                    }),
+                    AllowedFilter::callback('user',function($query,$value){
+                        $query->whereHas('users', function($user,$value){
+                            $user->where('id',$value);
+                        });
+                    })
+                )->orderBy('created_at','DESC')->paginate(10);
 
         $courses = Auth::user()->courses()->withoutTrashed()->get();
         $instructor_admins = User::withoutTrashed()->role(['Καθηγητής','Διαχειριστής'])->get();

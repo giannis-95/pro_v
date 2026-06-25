@@ -108,17 +108,22 @@
     const showFilters = ref(null);
 
     function searchFilterCourse(filters){
-        router.get('/course-histories',filters,{
+        router.get('/course-histories',
+            {
+                filter: {
+                    title: filters.title,
+                    date_from: filters.date_from,
+                    date_to: filters.date_to,
+                    status: filters.status,
+                }
+            },{
             preserveState: true,
-            replace: true,
-            onFinish: () => showFilters.value = false
+            replace: true
         });
     }
 
     function resetFilterCourse(){
-        router.get('/course-histories',{},{
-            onFinish: () => showFilters.value = false
-        });
+        router.get('/course-histories',{});
     }
 
     function exportExcel(){

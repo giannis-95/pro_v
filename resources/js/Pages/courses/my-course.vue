@@ -76,7 +76,13 @@
     });
 
     function filterSearch(filters){
-        router.get(`/course/my-course`,filters,{
+        router.get(`/course/my-course`,{
+            filter:{
+               title: filters.title,
+               date_from: filters.date_from,
+               date_to: filters.date_to
+            }
+        },{
             preserveState:true,
             replace:true
         });

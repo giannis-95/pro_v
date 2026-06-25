@@ -3,28 +3,40 @@
 namespace App\Http\Controllers\History;
 
 use App\Exports\History\AnnouncementHistoryExport;
-use App\Filters\History\AnnouncementHistoryFilter;
 use App\Http\Controllers\Controller;
 use App\Models\History\AnnouncementHistory;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\User;
 use App\Models\Course;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class AnnouncementHistoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        $announcement_history_class = new AnnouncementHistoryFilter($request);
+    public function index(){
+        $announcement_histories = QueryBuilder::for(AnnouncementHistory::query())
+            ->allowedFilters(
+                AllowedFilter::partial('user'),
+                AllowedFilter::partial('course'),
+                AllowedFilter::partial('title'),
+                AllowedFilter::callback('date_to' ,function($query,$date_to){
+                    $query->whereDate('created_at', '<=',$date_to);
+                }),
+                AllowedFilter::callback('date_from', function($query,$date_from){
+                    $query->whereDate('created_at' , '>=' , $date_from);
+                }),
+                AllowedFilter::exact('status')
+            )
+            ->paginate(10)
+            ->withQueryString();
 
-        $announcement_histories = $announcement_history_class->filterAnnouncementHistory(AnnouncementHistory::query())->paginate(10)->withQueryString();
-        $instructor_admins = User::withoutTrashed()->role(['Καθηγητής','Διαχειριστής'])->get();
-        $courses = Course::withoutTrashed()->get();
+            $instructor_admins = User::withoutTrashed()->role(['Καθηγητής','Διαχειριστής'])->get();
+            $courses = Course::withoutTrashed()->get();
 
         return inertia::render('announcement-histories/index',[
             'announcement_histories' => $announcement_histories,

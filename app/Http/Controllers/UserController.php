@@ -9,7 +9,6 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Filters\UserFilter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Exports\UsersExport;
@@ -21,28 +20,42 @@ use App\Notifications\Users\UserUpdatedNotification;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Notification;
+use Spatie\QueryBuilder\QueryBuilder;
+use Spatie\QueryBuilder\AllowedFilter;
 
 class UserController extends Controller
 {
     use AuthorizesRequests;
 
-    public function index(Request $request){
-        $userFilter = new UserFilter($request);
+    public function index(){
+        $user_role = Auth::user()->getRoleNames()->first();
 
-        $user_role = User::find(Auth::user()->id)->getRoleNames()->first();
-
-        $users = $userFilter->apply(User::withTrashed())
-            ->orderBy('id')
-            ->paginate(10)
-            ->through(function($user) {
-                $user->role = $user->getRoleNames()->first();
-                $user->is_deleted = $user->trashed();
-                return $user;
-            });
+        $users = QueryBuilder::for(User::query()->withTrashed())
+                ->allowedFilters(
+                    AllowedFilter::partial('name'),
+                    AllowedFilter::callback('role', function ($query, $value) {
+                        $query->whereHas('roles', function ($query) use ($value) {
+                            $query->where('name', $value);
+                        });
+                    }),
+                    AllowedFilter::callback('date_from', function ($query, $value) {
+                        $query->whereDate('created_at', '>=', $value);
+                    }),
+                    AllowedFilter::callback('date_to', function ($query, $value) {
+                        $query->whereDate('created_at', '<=', $value);
+                    }),
+                )
+                ->orderBy('id')
+                ->paginate(10)
+                ->through(function ($user) {
+                    $user->role = $user->getRoleNames()->first();
+                    $user->is_deleted = $user->trashed();
+                    return $user;
+                })->withQueryString();
 
         return Inertia::render('users/index', [
             'users' => $users,
-            'user_role' => $user_role
+            'user_role' => $user_role,
         ]);
     }
 

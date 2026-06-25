@@ -118,20 +118,15 @@
     const showFilterAnnouncement = ref(false);
     const showFilters = ref(false);
 
-    function searchFilterAnnouncement(announcement_filters){
-        router.get('/announcement-histories',announcement_filters,{
+    function searchFilterAnnouncement(filters){
+        router.get('/announcement-histories',{ filter: filters },{
             preserveState: true,
             replace: true,
-            onFinish: () => showFilters.value = false
         });
     }
 
     function resetFilterAnnouncement(){
-        router.get('/announcement-histories',{},{
-            preserveState: true,
-            replace: true,
-            onFinish: () => showFilters.value = false
-        });
+        router.get('/announcement-histories',{});
     }
 
     function exportExcel(){

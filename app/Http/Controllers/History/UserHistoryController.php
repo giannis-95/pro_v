@@ -6,21 +6,31 @@ use App\Exports\History\UserHistoryExport;
 use App\Http\Controllers\Controller;
 use App\Models\History\UserHistory;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
-use App\Filters\History\UserHistoryFilter;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class UserHistoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
-    {
-        $user_history_class = new UserHistoryFilter($request);
-
-        $user_histories = $user_history_class->filterUserHistory(UserHistory::query())->paginate(10)->withQueryString();
+    public function index(){
+        $user_histories  = QueryBuilder::for(UserHistory::query())
+            ->allowedFilters(
+                AllowedFilter::partial('name'),
+                AllowedFilter::callback('date_to', function($query,$date_to){
+                    $query->whereDate('created_at', '<=', $date_to);
+                }),
+                AllowedFilter::callback('date_from' , function($query,$date_from){
+                    $query->whereDate('created_at', '>=' ,$date_from);
+                }),
+                AllowedFilter::exact('role'),
+                AllowedFilter::exact('status')
+            )
+            ->paginate(10)
+            ->withQueryString();
 
         return inertia::render('user-histories/index',[
             'user_histories' => $user_histories

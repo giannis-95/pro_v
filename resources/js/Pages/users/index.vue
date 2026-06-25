@@ -68,6 +68,9 @@
                             </div>
                         </td>
                     </tr>
+                    <tr v-if="users.data?.lenght === 0">
+                       <td colspan="7">Δεν υπάρχουν χρήστες...</td>
+                    </tr>
                 </tbody>
                 <DeleteUser :user="userToDelete" @confirm-delete="deleteUser"/>
                 <RestoreUser :user="userToRestore" @restore-user="restoreUser"/>
@@ -167,17 +170,21 @@
     }
 
     function searchFilterUser(filters){
-        router.get(`/users`,filters,{
-            preserveState: true,
-            replace: true,
-            onFinish: () => showFilters.value = false
+        router.get('/users', {
+                filter: {
+                    name: filters.name,
+                    role: filters.role,
+                    date_from: filters.date_from,
+                    date_to: filters.date_to,
+                }
+            }, {
+            preserveState:true,
+            replace:true
         });
     }
 
     function resetFilterUser(){
-        router.get(`/users`,{},{
-            onFinish: () => showFilters.value = false
-        });
+        router.get('/users');
     }
 
     function exportExcel(){

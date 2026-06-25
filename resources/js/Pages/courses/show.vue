@@ -53,13 +53,22 @@
 
     const buyCourse = async () => {
         try {
-            const res = await axios.post('/api/buy-course', {
+            const res = await axios.post('/buy-course', {
                 course_id: props.course.id
             });
 
+            console.log('Response:', res.data);
+
             window.location.href = res.data.url;
+
         } catch (error) {
-            console.error(error);
+            console.log('FULL ERROR:', error);
+
+            if (error.response) {
+                console.log('STATUS:', error.response.status);
+                console.log('DATA:', error.response.data);
+            }
+
             alert('Σφάλμα κατά τη δημιουργία της πληρωμής');
         }
     };

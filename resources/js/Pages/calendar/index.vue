@@ -20,10 +20,10 @@
                                 <div v-for="announcement in dayAnnouncements(day)" :key="announcement.id" class="announcement">
                                     <button type="button" style="color: white;" @click="openAnnouncementModal(announcement)">
                                         <div class="row">
-                                            <span><strong>Τίτλος:</strong> {{ announcement.title }}</span>
-                                            <span><strong>Μάθημα:</strong> {{ announcement.course.title }}</span>
-                                            <span><strong>Καθηγητής:</strong> {{ announcement.user.name }}</span>
-                                            <span><strong>Ημερομηνία:</strong> {{ dayjs(announcement.created_at).format('DD-MM-YYYY') }}</span>
+                                            <span><strong>Τίτλος:</strong>{{ announcement.title }}</span>
+                                            <span><strong>Μάθημα:</strong>{{ announcement.course.title }}</span>
+                                            <span><strong>Καθηγητής:</strong>{{ announcement.user.name }}</span>
+                                            <span><strong>Ημερομηνία:</strong>{{ dayjs(announcement.created_at).format('DD-MM-YYYY') }}</span>
                                         </div>
                                     </button>
                                 </div>

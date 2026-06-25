@@ -6,24 +6,26 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Course;
 use App\Models\User;
-use App\Filters\RegisteredStudentFilter;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class RegisteredStudentsController extends Controller
 {
-    public function index(Request $request, $id){
-        $registered_students_class = new RegisteredStudentFilter($request);
-
+    public function index($id){
         $students = User::role('Φοιτητής')->get();
         $course = Course::findOrFail($id);
 
-        $users = $course->users()->whereHas('roles', function ($query) {
-            $query->whereNotIn('name', [
-                'Διαχειριστής',
-                'Καθηγητής'
-            ]);
-        });
-
-        $users = $registered_students_class->filterRegisteredStudents($users);
+        $users = QueryBuilder::for(
+                $course->users()
+            )->allowedFilters(
+                AllowedFilter::partial('name'),
+                AllowedFilter::partial('email'),
+            )->whereHas('roles', function ($query) {
+                $query->whereNotIn('name', [
+                    'Διαχειριστής',
+                    'Καθηγητής'
+                ]);
+            });
 
         $registered_students = $users->paginate(10)->through(function ($user) {
             $user->role = $user->getRoleNames()->first();
@@ -47,7 +49,10 @@ class RegisteredStudentsController extends Controller
         return redirect()->back()->withSuccess('Η προσθήκη των φοιτητών έγινε με επιτυχία.');
     }
 
-    public function unregistered($course){
-        dd($course);
+    public function unregistered($course_id,$unregistered_student_id){
+        $course = Course::findOrFail($course_id);
+        $course->users()->detach($unregistered_student_id);
+
+        return redirect()->back()->withsuccess('Η απεγραφή του φοιτητή από το μάθημα σας έγινε με επιτυχία.');
     }
 }

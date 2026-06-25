@@ -5,7 +5,6 @@
                 <div class="row text-center">
                     <h3>Προβολή Ιστορικού Μαθηματος</h3>
                 </div>
-                <hr>
                 <div class="row">
                     <div class="col-12 text-end">
                         <Link :href="route('course-histories.index')" class="btn btn-primary">Επιστροφή</Link>

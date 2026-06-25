@@ -107,7 +107,7 @@
     const showFilters = ref(null);
 
     function searchFilterUserHistory(filters){
-        router.get(`/user-histories`,filters,{
+        router.get(`/user-histories`,{ filter: filters },{
             preserveState: true,
             replace: true,
             onFinish: () => showFilters.value = false

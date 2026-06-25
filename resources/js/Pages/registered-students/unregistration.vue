@@ -8,11 +8,12 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        Είσαι σίγουρος ότι θέλεις να αφαιρέσεις τον Φοιτητή από το μάθημα <strong>{{ course.title }}</strong>;
+                        Είσαι σίγουρος ότι θέλεις να αφαιρέσεις τον Φοιτητή από το μάθημα <strong>{{ course?.title }}</strong>
+                        τον φοιτητή <strong>{{ unregistered_student?.name }}</strong>;
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" data-bs-dismiss="modal">Ακύρωση</button>
-                        <button class="btn btn-danger" @click="$emit('confirm-unregistration',course)">Διαγραφή</button>
+                        <button class="btn btn-danger" @click="$emit('confirm-unregistration',course,unregistered_student)">Διαγραφή</button>
                     </div>
                 </div>
             </div>
@@ -22,7 +23,8 @@
 
 <script setup>
     defineProps({
-        course:Object
+        course:Object,
+        unregistered_student:Object
     });
 
     const emit = defineEmits(['confirm-unregistration']);

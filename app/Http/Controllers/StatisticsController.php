@@ -7,7 +7,7 @@ use App\Models\Course;
 use Inertia\Inertia;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+
 class StatisticsController extends Controller
 {
     public function index(){

@@ -22,23 +22,6 @@
                         </div>
                     </div>
                     <div class="row mt-4">
-                        <div class="col col-form-label col-sm-3 col-md-3 col-lg-3">
-                            <label>Ημερομηνία Δημιουργίας Χρήστη</label>
-                        </div>
-                        <div class="col-sm-9 col-md-9 col-lg-9">
-                            <div class="row">
-                                <label class="col col-form-label">Από :</label>
-                                <div class="col-5">
-                                    <input type="date" class="form-control" v-model="filters.date_from">
-                                </div>
-                                <label class="col col-form-label">Εως :</label>
-                                <div class="col-5">
-                                    <input type="date" class="form-control" v-model="filters.date_to">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mt-4">
                         <div class="col-6">
                             <button @click="searchFilterUser" class="btn btn-primary">Αναζήτηση</button>
                         </div>
